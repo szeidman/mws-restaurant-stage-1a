@@ -100,7 +100,7 @@ nav h1 a {
 }
 /* ====================== Map ====================== */
 #map {
-  height: 400px;
+  height: 50em;
   width: 100%;
   background-color: #ccc;
 }
@@ -136,8 +136,10 @@ nav h1 a {
   background-color: #f3f3f3;
   list-style: outside none none;
   margin: 0;
-  padding: 1.5em 1em 1.5em;
+  padding: 1.5em 1em 1em;
   text-align: center;
+	display: flex;
+	flex-wrap: wrap;
 }
 #restaurants-list li {
   background-color: #fff;
@@ -147,7 +149,7 @@ nav h1 a {
   min-height: 380px;
   padding: 0 1em 1.1em;
   text-align: left;
-  max-width: 50%;
+  max-width: 20%;
 }
 #restaurants-list .restaurant-img {
   background-color: #ccc;
@@ -208,7 +210,7 @@ nav h1 a {
 .inside #footer {
   bottom: 0;
   position: absolute;
-  width: 50%;
+  width: 100%;
 }
 #restaurant-name {
   color: #f18200;

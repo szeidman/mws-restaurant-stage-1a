@@ -151,7 +151,7 @@ createReviewHTML = (review) => {
   const name = document.createElement('p');
   name.innerHTML = review.name;
   li.appendChild(name);
-
+//   element.classList.add("mystyle");
   const date = document.createElement('p');
   date.innerHTML = review.date;
   li.appendChild(date);

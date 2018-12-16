@@ -33,7 +33,7 @@
   	width: calc(100% - 1em);
   }
 
-  #restaurant-img {
+  #restaurant-picture {
   	max-width: 80%;
     margin: 0 auto 0 auto;
     display: block;

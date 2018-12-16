@@ -282,3 +282,15 @@ nav h1 a {
 #restaurant-hours td {
   color: #666;
 }
+.review-name {
+	font-weight: bold;
+	text-decoration: underline;
+}
+.review-date {
+	font-style: italic;
+	color: #666;
+}
+
+.review-rating {
+	text-shadow: 1px 1px #999;
+}

@@ -51,13 +51,13 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 /* ====================== Navigation ====================== */
 nav {
   width: 100%;
-	/* TODO: switch to a calc */
-  height: 80px;
+  height: 3em;
   background-color: #252831;
   text-align:center;
 }
 nav h1 {
   margin: auto;
+	padding: 0.2em 0 0 0
 }
 nav h1 a {
   color: #fff;
@@ -70,9 +70,9 @@ nav h1 a {
     padding: 0.5em 2.0em 1.0em;
     list-style: none;
     background-color: #eee;
-    font-size: 17px;
+    font-size: 1.1em;
     margin: 0;
-    width: calc(50% - 3em);
+    width: calc(100% - 4em);
 }
 
 /* Display list items side by side */
@@ -188,29 +188,32 @@ nav h1 a {
 
 /* ====================== Restaurant Details ====================== */
 .inside header {
-  position: fixed;
+	display: block;
   top: 0;
-  width: 100%;
+  max-width: 100%;
   z-index: 1000;
+}
+
+.inside main {
+	display: flex;
+	flex-wrap: wrap;
 }
 .inside #map-container {
   background: blue none repeat scroll 0 0;
-  height: 87%;
-  position: fixed;
-  right: 0;
+  position: relative;
 	/*TODO: Calc - x*/
-  top: 80px;
-  width: 50%;
+  top: 1em;
+  width: calc(50% - 1em);
 }
 .inside #map {
   background-color: #ccc;
   height: 100%;
-  width: 100%;
+  max-width: 100%;
 }
 .inside #footer {
   bottom: 0;
-  position: absolute;
   width: 100%;
+	display: block;
 }
 #restaurant-name {
   color: #f18200;
@@ -219,7 +222,7 @@ nav h1 a {
   font-weight: 200;
   letter-spacing: 0;
 	/*TODO: revisit this in responsive layout*/
-  margin: 8em 0 1em;
+  margin: 1em 0.2em 1em;
   text-transform: uppercase;
   line-height: 1.1;
 }
@@ -246,10 +249,10 @@ nav h1 a {
   border-bottom: 1px solid #d9d9d9;
   border-top: 1px solid #fff;
   padding: 0.3em 0.2em 0.2em;
-  width: 50%;
+	width: calc(50% - 1em);
 }
 #reviews-container {
-  padding: 30px 40px 80px;
+  padding: 1em 2em 3em;
 }
 #reviews-container h2 {
   color: #f58500;

@@ -2,7 +2,6 @@
   #map {
     height: 20em;
     width: 100%;
-    background-color: #ccc;
   }
 
   #restaurants-list li a {
@@ -25,6 +24,48 @@
 
 }
 
+@media screen and (max-width: 725px) {
+  .inside #map-container {
+    width: calc(100% - 1em);
+    height: 15em;
+  }
+  #restaurant-container, #reviews-container {
+  	width: calc(100% - 1em);
+  }
+
+  #restaurant-img {
+  	max-width: 80%;
+    margin: 0 auto 0 auto;
+    display: block;
+  }
+
+  #restaurant-cuisine {
+    margin: 0 0 0;
+    padding: 0 0;
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 726px) {
+
+  #reviews-container {
+  	width: calc(100% - 1em);
+  }
+
+  #reviews-list {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  #reviews-list li {
+    max-width: calc(50% - 2.3em);
+    display: inline-block;
+  }
+
+
+}
+
+
 @media screen and (min-width: 535px) and (max-width: 950px) {
   #map {
     height: 20em;
@@ -39,7 +80,7 @@
 }
 
 @media screen and (min-width: 950px) {
-  main, header, footer {
+  main, header, footer, .inside header, .inside main, .inside footer {
     width: 950px;
     margin-left: auto;
     margin-right: auto;

@@ -1,0 +1,47 @@
+@media screen and (max-width: 534px) {
+  #map {
+    height: 20em;
+    width: 100%;
+    background-color: #ccc;
+  }
+
+  #restaurants-list li a {
+    border-bottom: 1px solid #eee;
+    font-size: 1.0em;
+    margin: 0.2em 0 0;
+    padding: 0 0 0 0;
+  }
+
+  #restaurants-list {
+    margin: 0;
+    padding: 0.2em 0.5em 0.5em;
+  }
+  #restaurants-list li {
+    border: 1px solid #ccc;
+    margin: 0.1em;
+    padding: 0 1em 0.9em;
+    max-width: 100%;
+  }
+
+}
+
+@media screen and (min-width: 535px) and (max-width: 950px) {
+  #map {
+    height: 20em;
+    width: 100%;
+    background-color: #ccc;
+  }
+
+  #restaurants-list li {
+    max-width: 40%;
+  }
+
+}
+
+@media screen and (min-width: 950px) {
+  main, header, footer {
+    width: 950px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

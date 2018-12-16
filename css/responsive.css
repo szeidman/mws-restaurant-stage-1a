@@ -33,16 +33,16 @@
   	width: calc(100% - 1em);
   }
 
-  #restaurant-picture {
+  #restaurant-picture img {
   	max-width: 80%;
     margin: 0 auto 0 auto;
     display: block;
   }
 
   #restaurant-cuisine {
-    margin: 0 0 0;
-    padding: 0 0;
-    width: 100%;
+    max-width: 80%;
+    margin: 0 auto 0 auto;
+    padding: 0;
   }
 }
 
@@ -61,7 +61,6 @@
     max-width: calc(50% - 2.3em);
     display: inline-block;
   }
-
 
 }
 

@@ -91,16 +91,16 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   const large = document.createElement('source');
   large.srcset = DBHelper.imageLargeUrlForRestaurant(restaurant);
   large.media = "(min-width: 800px)";
-  picture.appendChild(large);
+  picture.append(large);
   const small = document.createElement('source');
   small.srcset = DBHelper.imageSmallUrlForRestaurant(restaurant);
   small.media = "(max-width: 799px)";
-  picture.appendChild(small);
+  picture.append(small);
   const image = document.createElement('img');
   image.src = DBHelper.imageLargeUrlForRestaurant(restaurant);
   image.alt = DBHelper.imageAltForRestaurant(restaurant);
   image.className = 'restaurant-img';
-  picture.appendChild(image);
+  picture.append(image);
 
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;

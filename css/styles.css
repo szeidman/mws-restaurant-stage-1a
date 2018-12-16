@@ -225,8 +225,8 @@ nav h1 a {
   text-transform: uppercase;
   line-height: 1.1;
 }
-#restaurant-picture {
-	max-width: 10%;
+#restaurant-picture img {
+	max-width: 80%;
 }
 #restaurant-address {
   font-size: 1.0em;
@@ -242,7 +242,7 @@ nav h1 a {
   padding: 0.02em 0;
   text-align: center;
   text-transform: uppercase;
-	width: 90%;
+	width: 80%;
 }
 #restaurant-container, #reviews-container {
   border-bottom: 1px solid #d9d9d9;

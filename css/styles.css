@@ -163,16 +163,22 @@ nav h1 a:hover {
   text-align: center;
 	display: flex;
 	flex-wrap: wrap;
+	flex-flow: row wrap;
+ 	justify-content: flex-start;
+ 	height: 100%;
 }
+
 #restaurants-list li {
   background-color: #fff;
   border: 2px solid #ccc;
   font-family: Arial,sans-serif;
   margin: 0.4em;
-  min-height: 20%;
   padding: 0 1em 1.1em;
   text-align: left;
   max-width: 28%;
+	min-height: 20%;
+	display: flex;
+  flex-flow: column nowrap;
 }
 #restaurants-list .restaurant-img {
   background-color: #ccc;
@@ -195,17 +201,18 @@ nav h1 a:hover {
   margin: 0;
   font-size: 1.0em;
 }
+
 #restaurants-list li a {
   background-color: #333ddb;
   border-bottom: 3px solid #eee;
   color: #fff;
   display: inline-block;
   font-size: 1.0em;
-  margin: 0.4em 0 0;
   padding: 0.2em 1em 0.4em;
   text-align: center;
   text-decoration: none;
   text-transform: uppercase;
+	margin: auto 0.2em 0;
 }
 
 #restaurants-list li a:hover{

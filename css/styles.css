@@ -328,3 +328,17 @@ nav h1 a:hover {
 .review-rating {
 	text-shadow: 1px 1px #999;
 }
+
+.skip-link {
+	position: absolute;
+	top: -40px;
+	left: 0;
+	background: white;
+	color: black;
+	padding: 0.5em;
+	z-index: 100;
+}
+
+.skip-link:focus {
+	top: 0;
+}

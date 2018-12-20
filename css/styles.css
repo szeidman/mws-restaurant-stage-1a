@@ -116,6 +116,9 @@ nav h1 a:hover {
   max-width: 100%;
   background-color: #ccc;
 }
+#map a {
+	color: #333ddb;
+}
 /* ====================== Restaurant Filtering ====================== */
 /*TODO: revisit these */
 .filter-options {

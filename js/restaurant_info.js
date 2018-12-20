@@ -1,5 +1,6 @@
-let restaurant;
+var restaurant;
 var newMap;
+
 
 /**
  * Initialize map as soon as the page is loaded.
@@ -111,6 +112,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   }
   // fill reviews
   fillReviewsHTML();
+
 }
 
 /**

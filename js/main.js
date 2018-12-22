@@ -5,7 +5,7 @@ var newMap
 var markers = []
 
 // Register service worker.
-/*
+
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/service-worker.js')
   .then(function(registration) {
@@ -15,7 +15,7 @@ if ('serviceWorker' in navigator) {
     console.log('Service worker registration failed, error:', error);
   });
 }
-*/
+
 
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.

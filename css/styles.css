@@ -41,6 +41,7 @@ h1, h2, h3, h4, h5, h6 {
   font-family: Helvetica, Arial, sans-serif;
   margin: 0.5em 0 0.5em 1.0em;
 }
+
 article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
 	display: block;
 }
@@ -117,6 +118,7 @@ nav h1 a:hover {
 #map {
   max-width: 100%;
   background-color: #ccc;
+	height: 25em;
 }
 #map a {
 	color: #333ddb;
@@ -190,10 +192,10 @@ nav h1 a:hover {
 #restaurants-list .restaurant-img {
   background-color: #ccc;
   display: block;
-  margin: 0;
+  margin: 1em 0 0 0;
   max-width: 100%;
-  min-height: 248px;
 }
+
 #restaurants-list li h1 {
   color: #333ddb;
   font-family: Arial,sans-serif;
@@ -226,6 +228,11 @@ nav h1 a:hover {
   background-color: orange;
 }
 
+.neighborhood-p {
+	text-transform: uppercase;
+	font-weight: 100;
+}
+
 /* ====================== Restaurant Details ====================== */
 .inside header {
 	display: block;
@@ -242,7 +249,7 @@ nav h1 a:hover {
 }
 .inside #map-container {
   background: blue none repeat scroll 0 0;
-	height: 50vh;
+	height: 40em;
 	width: calc(50% - 1em);
 }
 .inside #map {
@@ -336,6 +343,10 @@ nav h1 a:hover {
 }
 #restaurant-hours td {
   color: #444;
+}
+
+.day {
+	font-weight: 600;
 }
 .review-name {
 	font-weight: bold;

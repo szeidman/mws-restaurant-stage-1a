@@ -49,6 +49,21 @@
     margin: 0 auto 0 auto;
     padding: 0;
   }
+
+}
+
+@media screen and (max-width: 405px), (min-width: 725px) and (max-width: 775px)
+ {
+  #restaurant-hours td.day span {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+  #restaurant-hours td.day:before {
+    position: relative;
+    margin: 0 0 0 0;
+    content: attr(data-td);
+  }
 }
 
 @media screen and (min-width: 726px) {

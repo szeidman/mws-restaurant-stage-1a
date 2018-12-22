@@ -86,7 +86,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
   const address = document.getElementById('restaurant-address');
   address.innerHTML = restaurant.address;
-
+  /* Add responsive images. */
   const picture = document.getElementById('restaurant-picture');
   picture.className = 'restaurant-img';
   const large = document.createElement('source');

@@ -171,7 +171,7 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
  */
 createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
-
+  /* Add responsive images. */
   const picture = document.createElement('picture');
   const large = document.createElement('source');
   large.srcset = DBHelper.imageLargeUrlForRestaurant(restaurant);

@@ -343,10 +343,13 @@ nav h1 a:hover {
 }
 #restaurant-hours td {
   color: #444;
+	font-variant: small-caps;
+
 }
 
 .day {
-	font-weight: 600;
+	font-weight: 500;
+	font-variant-caps: all-small-caps;
 }
 .review-name {
 	font-weight: bold;

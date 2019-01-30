@@ -15,7 +15,14 @@ class DBHelper {
   /**
    * Fetch all restaurants.
    */
-  static fetchRestaurants(callback) {
+
+
+  static fetchRestaurants() {
+    fetch(DBHelper.DATABASE_URL)
+    .then(response => response.json())
+    .then(json => {const restaurants = json})
+    .catch(e => console.log(e));
+    /*
     let xhr = new XMLHttpRequest();
     xhr.open('GET', DBHelper.DATABASE_URL);
     xhr.onload = () => {
@@ -29,6 +36,7 @@ class DBHelper {
       }
     };
     xhr.send();
+    */
   }
 
   /**

@@ -30,13 +30,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
  * Fetch all neighborhoods and set their HTML.
  */
 fetchNeighborhoods = () => {
-  DBHelper.fetchNeighborhoods((error, neighborhoods) => {
-    if (error) { // Got an error
-      console.error(error);
-    } else {
-      self.neighborhoods = neighborhoods;
-      fillNeighborhoodsHTML();
-    }
+  DBHelper.fetchNeighborhoods().then(
+    neighborhoods => {
+    console.log("fetchNeighborhoods " + neighborhoods)
+    self.neighborhoods = neighborhoods;
+    fillNeighborhoodsHTML();
   });
 }
 
@@ -44,6 +42,7 @@ fetchNeighborhoods = () => {
  * Set neighborhoods HTML.
  */
 fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
+  console.log("fillCuisinesHTML " + cuisines);
   const select = document.getElementById('neighborhoods-select');
   neighborhoods.forEach(neighborhood => {
     const option = document.createElement('option');
@@ -58,13 +57,10 @@ fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
  * Fetch all cuisines and set their HTML.
  */
 fetchCuisines = () => {
-  DBHelper.fetchCuisines((error, cuisines) => {
-    if (error) { // Got an error!
-      console.error(error);
-    } else {
+  DBHelper.fetchCuisines().then(cuisines => {
+    console.log("fetchCuisines " + cuisines)
       self.cuisines = cuisines;
       fillCuisinesHTML();
-    }
   });
 }
 
@@ -73,7 +69,7 @@ fetchCuisines = () => {
  */
 fillCuisinesHTML = (cuisines = self.cuisines) => {
   const select = document.getElementById('cuisines-select');
-
+  console.log("fillCuisinesHTML " + cuisines )
   cuisines.forEach(cuisine => {
     const option = document.createElement('option');
     option.innerHTML = cuisine;
@@ -128,13 +124,9 @@ updateRestaurants = () => {
   const cuisine = cSelect[cIndex].value;
   const neighborhood = nSelect[nIndex].value;
 
-  DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, (error, restaurants) => {
-    if (error) { // Got an error!
-      console.error(error);
-    } else {
+  return DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood).then(restaurants => {
       resetRestaurants(restaurants);
       fillRestaurantsHTML();
-    }
   })
 }
 

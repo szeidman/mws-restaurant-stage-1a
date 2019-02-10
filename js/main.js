@@ -128,6 +128,7 @@ updateRestaurants = () => {
       resetRestaurants(restaurants);
       fillRestaurantsHTML();
   })
+  .catch(e => console.log(e));
 }
 
 /**

@@ -44,7 +44,7 @@ class DBHelper {
    */
   static fetchRestaurantById(id) {
     // fetch all restaurants with proper error handling.
-    DBHelper.fetchRestaurants().then(restaurants => {
+    return DBHelper.fetchRestaurants().then(restaurants => {
         const restaurant = restaurants.find(r => r.id == id);
         if (restaurant) { // Got the restaurant
           return restaurant;
@@ -60,7 +60,7 @@ class DBHelper {
    */
   static fetchRestaurantByCuisine(cuisine, callback) {
     // Fetch all restaurants  with proper error handling
-    DBHelper.fetchRestaurants().then(restaurants => {
+    return DBHelper.fetchRestaurants().then(restaurants => {
         // Filter restaurants to have only given cuisine type
         let results = restaurants.filter(r => r.cuisine_type == cuisine);
         callback(null, results);
@@ -112,7 +112,8 @@ class DBHelper {
         const uniqueNeighborhoods = neighborhoods.filter((v, i) => neighborhoods.indexOf(v) == i)
         console.log('uniqueNeighborhoods ' + uniqueNeighborhoods )
         return uniqueNeighborhoods;
-    });
+    })
+    .catch(e => console.log(e));
   }
 
   /**
@@ -127,7 +128,8 @@ class DBHelper {
         const uniqueCuisines = cuisines.filter((v, i) => cuisines.indexOf(v) == i)
         console.log('uniqueCuisines ' + uniqueCuisines )
         return uniqueCuisines;
-    });
+    })
+    .catch(e => console.log(e));
   }
 
   /**

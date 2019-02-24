@@ -7,6 +7,7 @@ const filesToCache = [
   '/css/styles.css',
   '/index.html',
   '/restaurant.html',
+  /*
   '/restaurant.html?id=1',
   '/restaurant.html?id=2',
   '/restaurant.html?id=3',
@@ -17,7 +18,8 @@ const filesToCache = [
   '/restaurant.html?id=8',
   '/restaurant.html?id=9',
   '/restaurant.html?id=10',
-  '/data/restaurants.json',
+  */
+  //'/data/restaurants.json',
   '/images/1-400_small.jpg',
   '/images/2-400_small.jpg',
   '/images/3-400_small.jpg',

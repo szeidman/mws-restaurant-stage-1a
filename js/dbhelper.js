@@ -18,8 +18,8 @@ class DBHelper {
    */
 
 
-  static fetchRestaurants() {
-    return fetch(DBHelper.DATABASE_URL)
+  static fetchRestaurants(id) {
+    return fetch(`${DBHelper.DATABASE_URL}/${id || ""}`)
     .then(response => response.json())
     .then(json => json)
     .catch(e => console.log(e));
@@ -40,13 +40,14 @@ class DBHelper {
     */
   }
 
+
   /**
    * Fetch a restaurant by its ID.
    */
   static fetchRestaurantById(id) {
     // fetch all restaurants with proper error handling.
-    return DBHelper.fetchRestaurants().then(restaurants => {
-        const restaurant = restaurants.find(r => r.id == id);
+    return DBHelper.fetchRestaurants(id).then(r => {
+        const restaurant = r;
         if (restaurant) { // Got the restaurant
           return restaurant;
         } else { // Restaurant does not exist in the database

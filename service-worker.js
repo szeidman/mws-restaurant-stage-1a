@@ -34,7 +34,7 @@ const filesToCache = [
   '/js/restaurant_info.js'
 ];
 
-const staticCacheName = 'sw-cache-v1';
+const staticCacheName = 'sw-cache-v2';
 
 /* Listen for install event, set callback */
 self.addEventListener('install', event => {

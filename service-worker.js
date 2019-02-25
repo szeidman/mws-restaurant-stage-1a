@@ -33,7 +33,8 @@ const filesToCache = [
   '/js/dbhelper.js',
   '/js/main.js',
   '/js/picturefill.min.js',
-  '/js/restaurant_info.js'
+  '/js/restaurant_info.js',
+  '/js/manifest.json'
 ];
 
 const staticCacheName = 'sw-cache-v2';

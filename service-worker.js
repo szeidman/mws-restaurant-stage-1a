@@ -30,6 +30,8 @@ const filesToCache = [
   '/images/8-400_small.jpg',
   '/images/9-400_small.jpg',
   '/images/10-400_small.jpg',
+  '/images/icon192.png',
+  '/images/icon512.png',
   '/js/dbhelper.js',
   '/js/main.js',
   '/js/picturefill.min.js',
@@ -47,6 +49,7 @@ self.addEventListener('install', event => {
     .then(cache => {
       return cache.addAll(filesToCache);
     })
+    .catch(e=>console.log(e))
   );
 });
 

@@ -80,7 +80,8 @@ class DBHelper {
         let results = restaurants.filter(r => r.neighborhood == neighborhood);
         console.log("fetchRestaurantByNeighborhood " + results)
         return results;
-      });
+      })
+      .catch(e => console.log(e));
   }
 
   /**

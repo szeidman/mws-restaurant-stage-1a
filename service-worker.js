@@ -7,19 +7,6 @@ const filesToCache = [
   '/css/styles.css',
   '/index.html',
   '/restaurant.html',
-  /*
-  '/restaurant.html?id=1',
-  '/restaurant.html?id=2',
-  '/restaurant.html?id=3',
-  '/restaurant.html?id=4',
-  '/restaurant.html?id=5',
-  '/restaurant.html?id=6',
-  '/restaurant.html?id=7',
-  '/restaurant.html?id=8',
-  '/restaurant.html?id=9',
-  '/restaurant.html?id=10',
-  */
-  //'/data/restaurants.json',
   '/images/1-400_small.jpg',
   '/images/2-400_small.jpg',
   '/images/3-400_small.jpg',
@@ -41,6 +28,17 @@ const filesToCache = [
 
 const staticCacheName = 'sw-cache-v2';
 
+function openDatabase() {
+  if (!idb) {
+    self.importScripts('js/idb.js');
+  }
+  return openDB('restrev', 1, function(upgradeDb){
+    let store = upgradeDb.createObjectStore('restrev',{
+      keyPath: 'id'
+    })
+    store.createIndex('name');
+  })
+}
 /* Listen for install event, set callback */
 self.addEventListener('install', event => {
   console.log('Attempting to install service worker and cache static assets');
@@ -72,6 +70,8 @@ self.addEventListener('activate', event => {
 /* Listen for fetch event, check if url is in cache and return from cache if found. */
 self.addEventListener('fetch', event => {
   console.log('Fetch event for ', event.request.url);
+  console.log(event);
+  console.log(caches);
   event.respondWith(
     caches.match(event.request)
     .then(response => {
@@ -81,7 +81,6 @@ self.addEventListener('fetch', event => {
       }
       console.log('Network request for ', event.request.url);
       return fetch(event.request)
-
     .then(response => {
       return caches.open(staticCacheName).then(cache => {
       cache.put(event.request.url, response.clone());

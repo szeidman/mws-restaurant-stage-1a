@@ -129,7 +129,7 @@ self.addEventListener('fetch', event => {
             }
           }
           if (dbData){
-            // convert to a response to allow clone(), json() functions   to work
+            // convert to a response to allow clone(), json() functions to work
             idbData = new Response(JSON.stringify(db));
           }
           // TODO: decide when to re-fetch data from API:

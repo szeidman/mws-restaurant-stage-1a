@@ -30,7 +30,6 @@ const staticCacheName = 'sw-cache-v2';
 
 if (typeof idb === 'undefined' || idb === null) {
   self.importScripts('./js/idb.js');
-  console.log('it was undefined');
 }
 
 const openDatabase = idb.openDb('restrev-store', 1, upgradeDb => {
@@ -53,7 +52,9 @@ self.addEventListener('install', event => {
   );
 });
 
-/* Listen for activate event, delete caches as found */
+/* Listen for activate event, delete caches as found
+Can possibly add idb cleanup here too
+*/
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(function(cacheNames) {
@@ -78,94 +79,80 @@ self.addEventListener('fetch', event => {
   // add functions based on URL of Request
   // one for database requests and one for the rest
   // if a database request look to idb
-  // TODO: different handling if json reponse instead of by host?
+  // TODO: change handling by looking at whether response is json reponse instead of by host
   if (requestHost === 'localhost:8000'){
-    console.log(parseURL.pathName);
-  event.respondWith(
-    caches.match(event.request, {ignoreSearch: true})
-    .then(response => {
-      if (response) {
-        console.log('Found ', event.request.url, ' in cache');
-        return response;
-      }
-      console.log('Network request for ', event.request.url);
-      return fetch(event.request)
-    .then(response => {
-      return caches.open(staticCacheName).then(cache => {
-      cache.put(event.request.url, response.clone());
-      return response;
-      });
-    });
-    }).catch(error => {
-      console.log('Error!');
-    })
-  );
-} else if (requestHost === 'localhost:1337'){
-  let requestPath = parseURL.pathname;
-  let restaurantID = requestPath.replace('/restaurants/','');
-
-  console.log(1337);
-  console.log(requestPath);
-  event.respondWith(
-      //change this to a lookup in the data, if so return it if not return the fetch(event.request)
-      //see if there's anything in the db and return it if so
-      //if not then do the fetch
-      //when fetch assign the id to the database: just data for now
-      //name
-      //neighborhood
-
-      openDatabase.then(db => {
-        if(!!restaurantID){
-          console.log('id is', restaurantID);
-          let idNumber = parseInt(restaurantID);
-          return db.transaction('restaurants-obj')
-          .objectStore('restaurants-obj').get(idNumber);
-        } else {
-          return db.transaction('restaurants-obj')
-          .objectStore('restaurants-obj').getAll();
+    event.respondWith(
+      caches.match(event.request, {ignoreSearch: true})
+      .then(response => {
+        if (response) {
+          console.log('Found ', event.request.url, ' in cache');
+          return response;
         }
-      })
-      .then(db=>{
-        console.log("the db is", db);
-        //TODO: debug if not array
-        //pass result over and update accordingly
-        let dbData = false;
-        let idbData;
-        if(db){
-          if(Array.isArray(db)){
-            if (db.length > 0){
-              dbData = true;
-            }
-          } else {
-            dbData = true;
-          }
-        }
-        if (dbData){
-          // convert to a response to allow clone(), json() functions to work
-          idbData = new Response(JSON.stringify(db));
-        }
-        // return dbData if there but also runs the fetch each time
-        // if we expect it to change, though...
-        // Run for dbData: return the data, then fetch and update database. If nothing returned, just fetch and update.
-        return idbData || fetch(event.request).then(data => {
-          console.log(data);
-          let dataClone = data.clone();
-          dataClone.json().then(json => {
-            openDatabase.then(db => {
-              const tx = db.transaction('restaurants-obj', 'readwrite');
-              if (Array.isArray(json)){
-                json.forEach(j=>{
-                  tx.objectStore('restaurants-obj').put(j);
-                })
-              } else {
-                tx.objectStore('restaurants-obj').put(json);
-              }
-              tx.complete;
-            });
+        console.log('Network request for ', event.request.url);
+        return fetch(event.request)
+        .then(response => {
+          return caches.open(staticCacheName).then(cache => {
+            cache.put(event.request.url, response.clone());
+            return response;
           });
-          return data;
         });
+      }).catch(error => {
+        console.log('Error!');
       })
     );
-  }
+  } else if (requestHost === 'localhost:1337'){
+    let requestPath = parseURL.pathname;
+    let restaurantID = requestPath.replace('/restaurants/','');
+    event.respondWith(
+        openDatabase.then(db => {
+          if(!!restaurantID){
+            let idNumber = parseInt(restaurantID);
+            return db.transaction('restaurants-obj')
+            .objectStore('restaurants-obj').get(idNumber);
+          } else {
+            return db.transaction('restaurants-obj')
+            .objectStore('restaurants-obj').getAll();
+          }
+        })
+        .then(db=>{
+          //TODO: debug if not array
+          //pass result over and update accordingly
+          let dbData = false;
+          let idbData;
+          if(db){
+            if(Array.isArray(db)){
+              if (db.length > 0){
+                dbData = true;
+              }
+            } else {
+              dbData = true;
+            }
+          }
+          if (dbData){
+            // convert to a response to allow clone(), json() functions   to work
+            idbData = new Response(JSON.stringify(db));
+          }
+          // TODO: decide when to re-fetch data from API:
+          // If database, return its data, then fetch and update  database. If nothing returned, just fetch and update.
+          return idbData || fetch(event.request).then(data => {
+            let dataClone = data.clone();
+            dataClone.json().then(json => {
+              openDatabase.then(db => {
+                const tx = db.transaction('restaurants-obj',  'readwrite');
+                //Handle array of json objects versus just one object
+                if (Array.isArray(json)){
+                  json.forEach(j=>{
+                    tx.objectStore('restaurants-obj').put(j);
+                  })
+                } else {
+                  tx.objectStore('restaurants-obj').put(json);
+                }
+                tx.complete;
+              });
+            });
+            return data;
+          });
+        }).catch(err=>{console.log(err);})
+      )
+    }
 });

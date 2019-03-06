@@ -17,8 +17,8 @@ const filesToCache = [
   '/images/8-400_small.jpg',
   '/images/9-400_small.jpg',
   '/images/10-400_small.jpg',
-  '/images/icon192.png',
-  '/images/icon512.png',
+  '/img/icons/icon192.png',
+  '/img/icons/icon512.png',
   '/js/dbhelper.js',
   '/js/main.js',
   '/js/picturefill.min.js',
@@ -32,9 +32,8 @@ if (typeof idb === 'undefined' || idb === null) {
   self.importScripts('./js/idb.js');
   console.log('it was undefined');
 }
-console.log(idb);
-const openDatabase = idb.openDb('restrev-store', 2, upgradeDb => {
-  console.log("udb", upgradeDb);
+
+const openDatabase = idb.openDb('restrev-store', 1, upgradeDb => {
   switch (upgradeDb.oldVersion){
     case 0:
       upgradeDb.createObjectStore('restaurants-obj', {keyPath: 'id'});
@@ -79,6 +78,7 @@ self.addEventListener('fetch', event => {
   // add functions based on URL of Request
   // one for database requests and one for the rest
   // if a database request look to idb
+  // TODO: different handling if json reponse instead of by host? 
   if (requestHost === 'localhost:8000'){
     console.log('cache time');
   event.respondWith(
@@ -127,13 +127,22 @@ self.addEventListener('fetch', event => {
       })
       .then(db=>{
         console.log("the db is", db);
-        //console.log("in the db function, it's", db[0].data);
-        //if (!db){console.log("nope no db")}
-        //if (db && db[0] && db[0].data){console.log('Found ', event.request.url, ' in idb'); return db[0].data}
-        //data return: put it back to json for response and end it
-        return fetch(event.request)
+        //TODO: debug if not array
+        //pass result over and update accordingly
+        let dbData;
+        if(db.length > 0){
+          // convert to a response to allow clone(), json() functions to work
+          dbData = new Response(JSON.stringify(db));
+        }
+        // return dbData if there but also runs the fetch each time
+        // if we expect it to change, though...
+        // Run for dbData: return the data, then fetch and update database. If nothing returned, just fetch and update.
+        console.log(dbData);
+        //move below into the fetch
+        return dbData || fetch(event.request);
       })
       .then(data => {
+        console.log(data);
         let dataClone = data.clone();
         dataClone.json().then(json => {
           openDatabase.then(db => {

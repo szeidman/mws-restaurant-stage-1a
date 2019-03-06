@@ -78,11 +78,11 @@ self.addEventListener('fetch', event => {
   // add functions based on URL of Request
   // one for database requests and one for the rest
   // if a database request look to idb
-  // TODO: different handling if json reponse instead of by host? 
+  // TODO: different handling if json reponse instead of by host?
   if (requestHost === 'localhost:8000'){
-    console.log('cache time');
+    console.log(parseURL.pathName);
   event.respondWith(
-    caches.match(event.request)
+    caches.match(event.request, {ignoreSearch: true})
     .then(response => {
       if (response) {
         console.log('Found ', event.request.url, ' in cache');
@@ -129,35 +129,43 @@ self.addEventListener('fetch', event => {
         console.log("the db is", db);
         //TODO: debug if not array
         //pass result over and update accordingly
-        let dbData;
-        if(db.length > 0){
+        let dbData = false;
+        let idbData;
+        if(db){
+          if(Array.isArray(db)){
+            if (db.length > 0){
+              dbData = true;
+            }
+          } else {
+            dbData = true;
+          }
+        }
+        if (dbData){
           // convert to a response to allow clone(), json() functions to work
-          dbData = new Response(JSON.stringify(db));
+          idbData = new Response(JSON.stringify(db));
         }
         // return dbData if there but also runs the fetch each time
         // if we expect it to change, though...
         // Run for dbData: return the data, then fetch and update database. If nothing returned, just fetch and update.
-        console.log(dbData);
-        //move below into the fetch
-        return dbData || fetch(event.request);
-      })
-      .then(data => {
-        console.log(data);
-        let dataClone = data.clone();
-        dataClone.json().then(json => {
-          openDatabase.then(db => {
-            const tx = db.transaction('restaurants-obj', 'readwrite');
-            if (Array.isArray(json)){
-              json.forEach(j=>{
-                tx.objectStore('restaurants-obj').put(j);
-              })
-            } else {
-              tx.objectStore('restaurants-obj').put(json);
-            }
-            tx.complete;
+        return idbData || fetch(event.request).then(data => {
+          console.log(data);
+          let dataClone = data.clone();
+          dataClone.json().then(json => {
+            openDatabase.then(db => {
+              const tx = db.transaction('restaurants-obj', 'readwrite');
+              if (Array.isArray(json)){
+                json.forEach(j=>{
+                  tx.objectStore('restaurants-obj').put(j);
+                })
+              } else {
+                tx.objectStore('restaurants-obj').put(json);
+              }
+              tx.complete;
+            });
           });
+          return data;
         });
-        return data;
-    }));
+      })
+    );
   }
 });

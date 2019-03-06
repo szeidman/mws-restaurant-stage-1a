@@ -102,15 +102,8 @@ self.addEventListener('fetch', event => {
   );
 } else if (requestHost === 'localhost:1337'){
   let requestPath = parseURL.pathname;
-  let checkForID = requestPath.replace('/restaurants/','');
-  //probably don't need these
-  if (!!checkForID){
-    //look for ID in database, if not there then add it
-    console.log("there's an ID!");
-  } else {
-    //get all the results, iterate through and add in the fields
-    console.log("there's not an ID!");
-  }
+  let restaurantID = requestPath.replace('/restaurants/','');
+
   console.log(1337);
   console.log(requestPath);
   event.respondWith(
@@ -120,11 +113,20 @@ self.addEventListener('fetch', event => {
       //when fetch assign the id to the database: just data for now
       //name
       //neighborhood
+
       openDatabase.then(db => {
-        return db.transaction('restaurants-obj')
-        .objectStore('restaurants-obj').getAll();
+        if(!!restaurantID){
+          console.log('id is', restaurantID);
+          let idNumber = parseInt(restaurantID);
+          return db.transaction('restaurants-obj')
+          .objectStore('restaurants-obj').get(idNumber);
+        } else {
+          return db.transaction('restaurants-obj')
+          .objectStore('restaurants-obj').getAll();
+        }
       })
       .then(db=>{
+        console.log("the db is", db);
         //console.log("in the db function, it's", db[0].data);
         //if (!db){console.log("nope no db")}
         //if (db && db[0] && db[0].data){console.log('Found ', event.request.url, ' in idb'); return db[0].data}
@@ -136,9 +138,13 @@ self.addEventListener('fetch', event => {
         dataClone.json().then(json => {
           openDatabase.then(db => {
             const tx = db.transaction('restaurants-obj', 'readwrite');
-            json.forEach(j=>{
-              tx.objectStore('restaurants-obj').put(j);
-            })
+            if (Array.isArray(json)){
+              json.forEach(j=>{
+                tx.objectStore('restaurants-obj').put(j);
+              })
+            } else {
+              tx.objectStore('restaurants-obj').put(json);
+            }
             tx.complete;
           });
         });

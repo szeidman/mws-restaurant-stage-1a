@@ -1,3 +1,8 @@
+#Stage 2 Notes:
+
+Updated the Stage 1 project to fetch content from an API rather than a self-contained JSON file, added IndexedDB support, and used Lighthouse guidance to improve performance metrics.
+
+# Boilerplate below:
 # Mobile Web Specialist Certification Course
 ---
 #### _Three Stage Course Material Project - Restaurant Reviews_

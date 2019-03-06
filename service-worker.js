@@ -122,20 +122,24 @@ self.addEventListener('fetch', event => {
         return tx.complete;
       })
       .then(db=>{
+        console.log(db);
+        if (!db){console.log("nope no db")}
+        if (db){console.log('Found ', event.request.url, ' in idb')}
         return db || fetch(event.request)
       })
-      .then(data => data.json())
-      .then(json =>{
-        openDatabase.then(db => {
-          const tx = db.transaction('restaurants-obj', 'readwrite');
-          tx.objectStore('restaurants-obj').put({
-            id: 1,
-            data: json
+      .then(data => {
+        let dataClone = data.clone();
+        dataClone.json().then(json => {
+          openDatabase.then(db => {
+            const tx = db.transaction('restaurants-obj', 'readwrite');
+            tx.objectStore('restaurants-obj').put({
+              id: 1,
+              data: json
+            });
+            tx.complete;
           });
-          console.log(json);
-        })
-        return json;
-      })
-  );
-}
+        });
+        return data;
+    }));
+  }
 });

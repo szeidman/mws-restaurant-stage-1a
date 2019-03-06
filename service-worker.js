@@ -121,25 +121,24 @@ self.addEventListener('fetch', event => {
       //name
       //neighborhood
       openDatabase.then(db => {
-        const tx = db.transaction('restaurants-obj');
-        tx.objectStore('restaurants-obj').getAll();
-        return tx.complete;
+        return db.transaction('restaurants-obj')
+        .objectStore('restaurants-obj').getAll();
       })
       .then(db=>{
-        console.log(db);
-        if (!db){console.log("nope no db")}
-        if (db){console.log('Found ', event.request.url, ' in idb')}
-        return db || fetch(event.request)
+        //console.log("in the db function, it's", db[0].data);
+        //if (!db){console.log("nope no db")}
+        //if (db && db[0] && db[0].data){console.log('Found ', event.request.url, ' in idb'); return db[0].data}
+        //data return: put it back to json for response and end it
+        return fetch(event.request)
       })
       .then(data => {
         let dataClone = data.clone();
         dataClone.json().then(json => {
           openDatabase.then(db => {
             const tx = db.transaction('restaurants-obj', 'readwrite');
-            tx.objectStore('restaurants-obj').put({
-              id: 1,
-              data: json
-            });
+            json.forEach(j=>{
+              tx.objectStore('restaurants-obj').put(j);
+            })
             tx.complete;
           });
         });

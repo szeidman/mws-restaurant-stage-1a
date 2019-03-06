@@ -33,8 +33,12 @@ if (typeof idb === 'undefined' || idb === null) {
   console.log('it was undefined');
 }
 console.log(idb);
-const openDatabase = idb.openDb('restrev-store', 1, upgradeDb => {
-  upgradeDb.createObjectStore('restaurants-obj', {keyPath: 'id'});
+const openDatabase = idb.openDb('restrev-store', 2, upgradeDb => {
+  console.log("udb", upgradeDb);
+  switch (upgradeDb.oldVersion){
+    case 0:
+      upgradeDb.createObjectStore('restaurants-obj', {keyPath: 'id'});
+  }
 });
 
 

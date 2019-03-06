@@ -28,17 +28,16 @@ const filesToCache = [
 
 const staticCacheName = 'sw-cache-v2';
 
-function openDatabase() {
-  if (!idb) {
-    self.importScripts('js/idb.js');
-  }
-  return openDB('restrev', 1, function(upgradeDb){
-    let store = upgradeDb.createObjectStore('restrev',{
-      keyPath: 'id'
-    })
-    store.createIndex('name');
-  })
+if (typeof idb === 'undefined' || idb === null) {
+  self.importScripts('./js/idb.js');
+  console.log('it was undefined');
 }
+console.log(idb);
+const openDatabase = idb.openDb('restrev-store', 1, upgradeDb => {
+  upgradeDb.createObjectStore('restaurants-obj', {keyPath: 'id'});
+});
+
+
 /* Listen for install event, set callback */
 self.addEventListener('install', event => {
   console.log('Attempting to install service worker and cache static assets');
@@ -68,10 +67,16 @@ self.addEventListener('activate', event => {
 });
 
 /* Listen for fetch event, check if url is in cache and return from cache if found. */
+
 self.addEventListener('fetch', event => {
   console.log('Fetch event for ', event.request.url);
-  console.log(event);
-  console.log(caches);
+  let parseURL = new URL(event.request.url)
+  let requestHost = parseURL.host;
+  // add functions based on URL of Request
+  // one for database requests and one for the rest
+  // if a database request look to idb
+  if (requestHost === 'localhost:8000'){
+    console.log('cache time');
   event.respondWith(
     caches.match(event.request)
     .then(response => {
@@ -87,10 +92,50 @@ self.addEventListener('fetch', event => {
       return response;
       });
     });
-
-
     }).catch(error => {
       console.log('Error!');
     })
   );
+} else if (requestHost === 'localhost:1337'){
+  let requestPath = parseURL.pathname;
+  let checkForID = requestPath.replace('/restaurants/','');
+  //probably don't need these
+  if (!!checkForID){
+    //look for ID in database, if not there then add it
+    console.log("there's an ID!");
+  } else {
+    //get all the results, iterate through and add in the fields
+    console.log("there's not an ID!");
+  }
+  console.log(1337);
+  console.log(requestPath);
+  event.respondWith(
+      //change this to a lookup in the data, if so return it if not return the fetch(event.request)
+      //see if there's anything in the db and return it if so
+      //if not then do the fetch
+      //when fetch assign the id to the database: just data for now
+      //name
+      //neighborhood
+      openDatabase.then(db => {
+        const tx = db.transaction('restaurants-obj');
+        tx.objectStore('restaurants-obj').getAll();
+        return tx.complete;
+      })
+      .then(db=>{
+        return db || fetch(event.request)
+      })
+      .then(data => data.json())
+      .then(json =>{
+        openDatabase.then(db => {
+          const tx = db.transaction('restaurants-obj', 'readwrite');
+          tx.objectStore('restaurants-obj').put({
+            id: 1,
+            data: json
+          });
+          console.log(json);
+        })
+        return json;
+      })
+  );
+}
 });

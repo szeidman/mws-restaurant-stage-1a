@@ -121,7 +121,7 @@ self.addEventListener('fetch', event => {
           let idbData;
           if(db){
             if(Array.isArray(db)){
-              if (db.length > 0){
+              if (db.length > 1){
                 dbData = true;
               }
             } else {

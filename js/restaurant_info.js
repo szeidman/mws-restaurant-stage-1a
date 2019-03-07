@@ -130,7 +130,6 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
   const hours = document.getElementById('restaurant-hours');
   for (let key in operatingHours) {
     const row = document.createElement('tr');
-
     const day = document.createElement('td');
     const span = document.createElement('span');
     span.innerHTML = key;
@@ -207,9 +206,14 @@ createReviewHTML = (review) => {
  * Add restaurant name to the breadcrumb navigation menu
  */
 fillBreadcrumb = (restaurant=self.restaurant) => {
+  const id = getParameterByName('id');
   const breadcrumb = document.getElementById('breadcrumb');
   const li = document.createElement('li');
-  li.innerHTML = restaurant.name;
+  const liLink = document.createElement('a');
+  liLink.setAttribute('href', `./restaurant.html?id=${id}`);
+  liLink.innerHTML = restaurant.name;
+  liLink.setAttribute('aria-current', 'page');
+  li.appendChild(liLink);
   breadcrumb.appendChild(li);
 }
 

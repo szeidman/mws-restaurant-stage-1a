@@ -1,13 +1,12 @@
-#Restaurant Reviews Project Stage 2 of 3
-
-## Description
+## Restaurant Reviews Project Stage 2 of 3
+### Description
 This branch aims to meet the specifications for Stage 2 of the Restaurant Reviews project. Stage 1 added some caching, responsiveness, and a11y features to a pre-built site. Currently, the site features:
 * Accessibility features, e.g., use of aria and other best practices for screen readers, appropriate color contrast, and more
 * Responsive layouts, including responsive images, for main and detail pages to allow clean viewing across screen sizes
 * Caching via a Service Worker and IndexedDB to enable offline use
 * Performance features to meet various benchmarks checked with Lighthouse
 
-## Usage
+### Usage
 You'll need to install node and npm if you've not already.
 (https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 

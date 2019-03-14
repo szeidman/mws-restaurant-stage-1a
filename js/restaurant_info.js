@@ -1,3 +1,5 @@
+/* jshint -W104 */ /* jshint -W119 */
+
 var restaurant;
 var newMap;
 
@@ -43,7 +45,7 @@ initMap = () => {
       return DBHelper.mapMarkerForRestaurant(self.restaurant, self.newMap);
   })
   .catch(e=> console.log(e));
-}
+};
 
 /* window.initMap = () => {
   fetchRestaurantFromURL((error, restaurant) => {
@@ -61,27 +63,51 @@ initMap = () => {
   });
 } */
 
+fetchReviewsFromURL = (restID) => {
+  if(self.restaurant){
+    if (self.restaurant.reviews) {
+      return self.restaurant.reviews;
+    }
+    return DBHelper.fetchReviewsByRestaurant(restID)
+    .then(reviews => {
+      self.restaurant.reviews = reviews;
+      if(!reviews) {
+        console.error(error);
+        return;
+      }
+      fillReviewsHTML(self.restaurant.reviews);
+    })
+    .catch(e=>console.log(e));
+  }
+};
 /**
  * Get current restaurant from page URL.
  */
 fetchRestaurantFromURL = () => {
   if (self.restaurant) { // restaurant already fetched!
+    if(!self.restaurant.reviews){
+      fetchReviewsFromURL(self.restaurant.id)
+      .then(r=> self.restaurant)
+      .catch(e=>console.log(e));
+    }
     return self.restaurant;
-  }
-  const id = getParameterByName('id');
-  if (!id) { // no id found in URL
-    error = 'No restaurant id in URL'
-    return console.log(error);
   } else {
-    return DBHelper.fetchRestaurantById(id).then(restaurant => {
-      self.restaurant = restaurant;
-      if (!restaurant) {
-        console.error(error);
-        return;
-      }
-      fillRestaurantHTML();
-    })
-    .catch(e => console.log(e));
+    const id = getParameterByName('id');
+    if (!id) { // no id found in URL
+      error = 'No restaurant id in URL';
+      return console.log(error);
+    } else {
+      return DBHelper.fetchRestaurantById(id).then(restaurant => {
+        self.restaurant = restaurant;
+        if (!restaurant) {
+          console.error(error);
+          return;
+        }
+        fetchReviewsFromURL(id);
+      })
+      .then(r => {fillRestaurantHTML();})
+      .catch(e => console.log(e));
+    }
   }
 }
 
@@ -119,7 +145,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
     fillRestaurantHoursHTML();
   }
   // fill reviews
-  fillReviewsHTML();
+  //fillReviewsHTML();
 
 }
 
@@ -168,6 +194,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   reviews.forEach(review => {
     ul.appendChild(createReviewHTML(review));
   });
+  //TODO: Add a ul append child for the form here.
   container.appendChild(ul);
 }
 
@@ -184,7 +211,8 @@ createReviewHTML = (review) => {
   topbar.appendChild(name);
 //   element.classList.add("mystyle");
   const date = document.createElement('p');
-  date.innerHTML = review.date;
+  let reviewDate = new Date(review.updatedAt);
+  date.innerHTML = reviewDate.toLocaleString();
   date.classList.add("review-date");
   topbar.appendChild(date);
   li.appendChild(topbar);
@@ -232,3 +260,5 @@ getParameterByName = (name, url) => {
     return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
+
+//TODO: Add in JS to populate the form element

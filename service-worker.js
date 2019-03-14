@@ -26,7 +26,7 @@ const filesToCache = [
   '/js/manifest.json'
 ];
 
-const staticCacheName = 'sw-cache-v2';
+const staticCacheName = 'sw-cache-v3';
 
 if (typeof idb === 'undefined' || idb === null) {
   self.importScripts('./js/idb.js');
@@ -74,7 +74,7 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   console.log('Fetch event for ', event.request.url);
-  let parseURL = new URL(event.request.url)
+  let parseURL = new URL(event.request.url);
   let requestHost = parseURL.host;
   // add functions based on URL of Request
   // one for database requests and one for the rest
@@ -102,57 +102,67 @@ self.addEventListener('fetch', event => {
     );
   } else if (requestHost === 'localhost:1337'){
     let requestPath = parseURL.pathname;
-    let restaurantID = requestPath.replace('/restaurants/','');
-    event.respondWith(
-        openDatabase.then(db => {
-          if(!!restaurantID){
-            let idNumber = parseInt(restaurantID);
-            return db.transaction('restaurants-obj')
-            .objectStore('restaurants-obj').get(idNumber);
-          } else {
-            return db.transaction('restaurants-obj')
-            .objectStore('restaurants-obj').getAll();
-          }
-        })
-        .then(db=>{
-          //TODO: debug if not array
-          //pass result over and update accordingly
-          let dbData = false;
-          let idbData;
-          if(db){
-            if(Array.isArray(db)){
-              if (db.length > 1){
+    console.log(requestPath);
+    //TODO: Replace url handling here for requests to restaurants or reviews
+    if (requestPath.startsWith('/restaurants')){
+      let restaurantID = requestPath.replace('/restaurants/','');
+      event.respondWith(
+          openDatabase.then(db => {
+            if(!!restaurantID){
+              let idNumber = parseInt(restaurantID);
+              return db.transaction('restaurants-obj')
+              .objectStore('restaurants-obj').get(idNumber);
+            } else {
+              return db.transaction('restaurants-obj')
+              .objectStore('restaurants-obj').getAll();
+            }
+          })
+          .then(db=>{
+            //TODO: debug if not array
+            //pass result over and update accordingly
+            let dbData = false;
+            let idbData;
+            if(db){
+              if(Array.isArray(db)){
+                if (db.length > 1){
+                  dbData = true;
+                }
+              } else {
                 dbData = true;
               }
-            } else {
-              dbData = true;
             }
-          }
-          if (dbData){
-            // convert to a response to allow clone(), json() functions to work
-            idbData = new Response(JSON.stringify(db));
-          }
-          // TODO: decide when to re-fetch data from API:
-          // If database, return its data, then fetch and update  database. If nothing returned, just fetch and update.
-          return idbData || fetch(event.request).then(data => {
-            let dataClone = data.clone();
-            dataClone.json().then(json => {
-              openDatabase.then(db => {
-                const tx = db.transaction('restaurants-obj',  'readwrite');
-                //Handle array of json objects versus just one object
-                if (Array.isArray(json)){
-                  json.forEach(j=>{
-                    tx.objectStore('restaurants-obj').put(j);
-                  })
-                } else {
-                  tx.objectStore('restaurants-obj').put(json);
-                }
-                tx.complete;
+            if (dbData){
+              // convert to a response to allow clone(), json() functions to work
+              idbData = new Response(JSON.stringify(db));
+            }
+            // TODO: decide when to re-fetch data from API:
+            // If database, return its data, then fetch and update  database. If nothing returned, just fetch and update.
+            return idbData || fetch(event.request).then(data => {
+              let dataClone = data.clone();
+              dataClone.json().then(json => {
+                openDatabase.then(db => {
+                  const tx = db.transaction('restaurants-obj',  'readwrite');
+                  //Handle array of json objects versus just one object
+                  if (Array.isArray(json)){
+                    json.forEach(j=>{
+                      tx.objectStore('restaurants-obj').put(j);
+                    })
+                  } else {
+                    tx.objectStore('restaurants-obj').put(json);
+                  }
+                  tx.complete;
+                });
               });
+              return data;
             });
-            return data;
-          });
-        }).catch(err=>{console.log(err);})
-      )
+          }).catch(err=>{console.log(err);})
+        )
+      } else if (requestPath.startsWith('/reviews')){
+        console.log('started with reviews!')
+        console.log(event.request);
+        return fetch(event.request);
+      }
     }
 });
+
+//TODO: Add a listener when connection's offline to push through updates from IDB when reconnected (can be 2-way updates)

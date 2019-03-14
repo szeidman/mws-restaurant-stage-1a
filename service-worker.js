@@ -32,10 +32,12 @@ if (typeof idb === 'undefined' || idb === null) {
   self.importScripts('./js/idb.js');
 }
 
-const openDatabase = idb.openDb('restrev-store', 1, upgradeDb => {
+const openDatabase = idb.openDb('restrev-store', 2, upgradeDb => {
   switch (upgradeDb.oldVersion){
     case 0:
       upgradeDb.createObjectStore('restaurants-obj', {keyPath: 'id'});
+    case 1:
+      upgradeDb.createObjectStore('reviews-obj', {keyPath: 'id'});
   }
 });
 

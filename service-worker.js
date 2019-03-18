@@ -160,9 +160,58 @@ self.addEventListener('fetch', event => {
           }).catch(err=>{console.log(err);})
         )
       } else if (requestPath.startsWith('/reviews')){
-        console.log('started with reviews!')
-        console.log(event.request);
-        return fetch(event.request);
+        let reviewID = requestPath.replace('/reviews/','');
+        event.respondWith(
+            openDatabase.then(db => {
+              if(!!reviewID){
+                let idNumber = parseInt(reviewID);
+                return db.transaction('reviews-obj')
+                .objectStore('reviews-obj').get(idNumber);
+              } else {
+                return db.transaction('reviews-obj')
+                .objectStore('reviews-obj').getAll();
+              }
+            })
+            .then(db=>{
+              //TODO: debug if not array
+              //pass result over and update accordingly
+              let dbData = false;
+              let idbData;
+              if(db){
+                if(Array.isArray(db)){
+                  if (db.length > 1){
+                    dbData = true;
+                  }
+                } else {
+                  dbData = true;
+                }
+              }
+              if (dbData){
+                // convert to a response to allow clone(), json() functions to work
+                idbData = new Response(JSON.stringify(db));
+              }
+              // TODO: decide when to re-fetch data from API:
+              // If database, return its data, then fetch and update  database. If nothing returned, just fetch and update.
+              return idbData || fetch(event.request).then(data => {
+                let dataClone = data.clone();
+                dataClone.json().then(json => {
+                  openDatabase.then(db => {
+                    const tx = db.transaction('reviews-obj',  'readwrite');
+                    //Handle array of json objects versus just one object
+                    if (Array.isArray(json)){
+                      json.forEach(j=>{
+                        tx.objectStore('reviews-obj').put(j);
+                      })
+                    } else {
+                      tx.objectStore('reviews-obj').put(json);
+                    }
+                    tx.complete;
+                  });
+                });
+                return data;
+              });
+            }).catch(err=>{console.log(err);})
+          )
       }
     }
 });

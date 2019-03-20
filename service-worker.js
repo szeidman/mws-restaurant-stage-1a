@@ -105,7 +105,6 @@ self.addEventListener('fetch', event => {
   } else if (requestHost === 'localhost:1337'){
     let requestPath = parseURL.pathname;
     console.log(requestPath);
-    //TODO: Replace url handling here for requests to restaurants or reviews
     if (requestPath.startsWith('/restaurants')){
       let restaurantID = requestPath.replace('/restaurants/','');
       event.respondWith(

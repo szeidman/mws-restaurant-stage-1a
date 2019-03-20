@@ -194,9 +194,10 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   reviews.forEach(review => {
     ul.appendChild(createReviewHTML(review));
   });
+  ul.appendChild(reviewForm());
   //TODO: Add a ul append child for the form here.
   container.appendChild(ul);
-}
+};
 
 /**
  * Create review HTML and add it to the webpage.
@@ -209,21 +210,59 @@ createReviewHTML = (review) => {
   name.innerHTML = review.name;
   name.classList.add("review-name");
   topbar.appendChild(name);
-//   element.classList.add("mystyle");
   const date = document.createElement('p');
   let reviewDate = new Date(review.updatedAt);
   date.innerHTML = reviewDate.toLocaleString();
   date.classList.add("review-date");
   topbar.appendChild(date);
   li.appendChild(topbar);
-
+  //&star; &starf;
+  const starRating = review.rating;
+  let stars = "";
+  for (let i = 0; i<5; i++){
+    stars += (starRating - i >= 1) ? `&starf;` : `&star;`;
+  }
   const rating = document.createElement('p');
-  rating.innerHTML = `Rating: ${review.rating}`;
+  rating.innerHTML = `Rating: ${stars}`;
+  rating.setAttribute("aria-label", `Rating: ${starRating} stars out of 5`);
   rating.classList.add("review-rating");
   li.appendChild(rating);
 
   const comments = document.createElement('p');
   comments.innerHTML = review.comments;
+  comments.classList.add("review-comments");
+  li.appendChild(comments);
+
+  return li;
+}
+
+reviewForm = () => {
+  const li = document.createElement('li');
+  li.setAttribute("role", "form");
+  li.setAttribute("aria-labelledby", "add-review");
+  const topbar = document.createElement('div');
+  topbar.classList.add("review-topbar");
+  const name = document.createElement('h4');
+  name.innerHTML = "Add a Review";
+  name.classList.add("review-name");
+  name.id = "add-review";
+  topbar.appendChild(name);
+  /*
+  const date = document.createElement('p');
+  let reviewDate = new Date();
+  date.innerHTML = reviewDate.toLocaleString();
+  date.classList.add("review-date");
+  topbar.appendChild(date);
+  */
+  li.appendChild(topbar);
+
+  const rating = document.createElement('p');
+  rating.innerHTML = `Rating: `;
+  rating.classList.add("review-rating");
+  li.appendChild(rating);
+
+  const comments = document.createElement('p');
+  comments.innerHTML = ``;
   comments.classList.add("review-comments");
   li.appendChild(comments);
 

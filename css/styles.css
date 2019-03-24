@@ -188,6 +188,7 @@ nav h1 a:hover {
 	min-height: 20%;
 	display: flex;
   flex-flow: column nowrap;
+	flex-grow: 1;
 }
 #restaurants-list .restaurant-img {
   background-color: #ccc;
@@ -206,7 +207,7 @@ nav h1 a:hover {
   margin: 0.4em 0 0.2em;
   text-transform: uppercase;
 }
-#restaurants-list p h4{
+#restaurants-list p{
   margin: 0;
   font-size: 1.0em;
 }
@@ -269,7 +270,6 @@ nav h1 a:hover {
   font-size: 1.5em;
   font-weight: 400;
   letter-spacing: 2px;
-	/*TODO: revisit this in responsive layout*/
   margin: 1em 0.2em 1em;
   text-transform: uppercase;
   line-height: 1.1;
@@ -307,10 +307,6 @@ nav h1 a:hover {
 	width: calc(50% - 0.25em);
 }
 
-#restaurant-container h2 {
-	background:
-}
-
 #reviews-container h2 {
   color: #333ddb;
   font-size: 1.5em;
@@ -336,11 +332,24 @@ nav h1 a:hover {
   position: relative;
 	max-width: 100%;
 	display: inline-block;
+	flex-grow: 1;
 }
+
 #reviews-list li p {
   margin: 0 1em 0.3em 1em;
 	padding: 0.1em 0 0 0.1em;
 }
+#reviews-list li h4 {
+  margin: 0 1em 0.3em 1em;
+	padding: 0.1em 0 0 0.1em;
+	color: orange;
+}
+#reviews-list li legend {
+  margin: 0 1em 0.3em 1em;
+	padding: 0.1em 0 0 0.1em;
+	color: orange;
+}
+
 #restaurant-hours td {
   color: #444;
 	font-variant: small-caps;
@@ -370,6 +379,34 @@ nav h1 a:hover {
 	width: 100%;
 }
 
+.form-label {
+	color: #999;
+}
+
+#review-form {
+	height: 100%;
+	margin: 0;
+	border: 0;
+	padding: 0;
+}
+fieldset {
+	border-radius: 8px 0 0 0;
+	box-sizing: border-box;
+}
+
+legend {
+	font-size: 1.1em;
+}
+
+input, textarea {
+	width: 100%;
+	box-sizing: border-box;
+	border-radius: 4px;
+	background-color: #fdfdfd;
+}
+textarea {
+	min-height: 10.0em;
+}
 .skip-link {
 	position: absolute;
 	top: -40px;

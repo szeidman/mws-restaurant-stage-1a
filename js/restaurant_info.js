@@ -204,16 +204,17 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
  */
 createReviewHTML = (review) => {
   const li = document.createElement('li');
+  li.classList.add("reviews-list-li");
   const topbar = document.createElement('div');
   topbar.classList.add("review-topbar");
   const name = document.createElement('p');
   name.innerHTML = review.name;
-  name.classList.add("review-name");
+  name.classList.add("review-name", "reviews-list-toptext");
   topbar.appendChild(name);
   const date = document.createElement('p');
   let reviewDate = new Date(review.updatedAt);
   date.innerHTML = reviewDate.toLocaleString();
-  date.classList.add("review-date");
+  date.classList.add("review-date", "reviews-list-toptext");
   topbar.appendChild(date);
   li.appendChild(topbar);
   //&star; &starf;
@@ -224,13 +225,13 @@ createReviewHTML = (review) => {
   }
   const rating = document.createElement('p');
   rating.innerHTML = `Rating: ${stars}`;
-  rating.setAttribute("aria-label", `Rating: ${starRating} stars out of 5`);
-  rating.classList.add("review-rating");
+  rating.setAttribute("aria-label", `Rating: ${starRating} out of 5 stars`);
+  rating.classList.add("review-rating", "reviews-list-toptext");
   li.appendChild(rating);
 
   const comments = document.createElement('p');
   comments.innerHTML = review.comments;
-  comments.classList.add("review-comments");
+  comments.classList.add("review-comments", "reviews-list-toptext");
   li.appendChild(comments);
 
   return li;
@@ -240,13 +241,64 @@ reviewForm = () => {
   const li = document.createElement('li');
   li.setAttribute("role", "form");
   li.setAttribute("aria-labelledby", "add-review");
+  li.classList.add("reviews-list-li");
+  li.id = "review-form";
   const topbar = document.createElement('div');
   topbar.classList.add("review-topbar");
-  const name = document.createElement('h4');
-  name.innerHTML = "Add a Review";
-  name.classList.add("review-name");
-  name.id = "add-review";
-  topbar.appendChild(name);
+  const reviewFieldSet = document.createElement('fieldset');
+  const formHeader = document.createElement('legend');
+  formHeader.innerHTML = " add a review ";
+  formHeader.id = "add-review";
+  const nameLabel = document.createElement('label');
+  nameLabel.for = "name";
+  nameLabel.classList.add("form-label");
+  nameLabel.innerHTML = "name: ";
+  const nameField = document.createElement('input');
+  nameField.name = "name";
+  nameField.id = "name";
+  nameField.type = "text";
+  const ratingLabel = document.createElement('label');
+  ratingLabel.for = "rating";
+  ratingLabel.classList.add("form-label");
+  ratingLabel.innerHTML = "rating: ";
+  const rating = document.createElement('select');
+  rating.name = "rating";
+  rating.id = "rating";
+  let stars = [];
+  for (let i=5; i>=1; i--){
+    let star = document.createElement('option');
+    star.value = i;
+    star.innerHTML = (`&starf;`.repeat(i) + `&star;`.repeat(5-i));
+    star.setAttribute("aria-label", `Rating: ${i} out of 5 stars`);
+    rating.appendChild(star);
+  }
+  const reviewLabel = document.createElement('label');
+  reviewLabel.for = "review-text";
+  reviewLabel.classList.add("form-label");
+  reviewLabel.innerHTML = "comments: ";
+  const reviewText = document.createElement('textarea');
+  reviewText.name = "review-text";
+  reviewText.id = "review-text";
+  reviewText.type = "text";
+  var breakPoint = document.createElement('br');
+  const submit = document.createElement('input');
+  submit.type = "submit";
+  submit.value = "submit review";
+  reviewFieldSet.appendChild(formHeader);
+  reviewFieldSet.appendChild(nameLabel);
+  reviewFieldSet.appendChild(nameField);
+  reviewFieldSet.appendChild(document.createElement('br'));
+  reviewFieldSet.appendChild(ratingLabel);
+  reviewFieldSet.appendChild(document.createElement('br'));
+  reviewFieldSet.appendChild(rating);
+  reviewFieldSet.appendChild(document.createElement('br'));
+  reviewFieldSet.appendChild(reviewLabel);
+  reviewFieldSet.appendChild(reviewText);
+  reviewFieldSet.appendChild(document.createElement('br'));
+  reviewFieldSet.appendChild(submit);
+
+
+  topbar.appendChild(reviewFieldSet);
   /*
   const date = document.createElement('p');
   let reviewDate = new Date();
@@ -256,15 +308,6 @@ reviewForm = () => {
   */
   li.appendChild(topbar);
 
-  const rating = document.createElement('p');
-  rating.innerHTML = `Rating: `;
-  rating.classList.add("review-rating");
-  li.appendChild(rating);
-
-  const comments = document.createElement('p');
-  comments.innerHTML = ``;
-  comments.classList.add("review-comments");
-  li.appendChild(comments);
 
   return li;
 }

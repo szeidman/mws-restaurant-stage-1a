@@ -195,7 +195,7 @@ self.addEventListener('fetch', event => {
                 let dataClone = data.clone();
                 dataClone.json().then(json => {
                   openDatabase.then(db => {
-                    const tx = db.transaction('reviews-obj',  'readwrite');
+                    const tx = db.transaction('reviews-obj', 'readwrite');
                     //Handle array of json objects versus just one object
                     if (Array.isArray(json)){
                       json.forEach(j=>{
@@ -205,8 +205,8 @@ self.addEventListener('fetch', event => {
                       tx.objectStore('reviews-obj').put(json);
                     }
                     tx.complete;
-                  });
-                });
+                  }).catch(err=>{console.log(err);});
+                }).catch(err=>{console.log(err);});
                 return data;
               });
             }).catch(err=>{console.log(err);})

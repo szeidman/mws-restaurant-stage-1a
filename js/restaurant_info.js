@@ -197,6 +197,8 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   ul.appendChild(reviewForm());
   //TODO: Add a ul append child for the form here.
   container.appendChild(ul);
+  document.getElementById("review-form").addEventListener('submit', submitReview);
+
 };
 
 /**
@@ -235,16 +237,14 @@ createReviewHTML = (review) => {
   li.appendChild(comments);
 
   return li;
-}
+};
 
 reviewForm = () => {
   const li = document.createElement('li');
-  li.setAttribute("role", "form");
-  li.setAttribute("aria-labelledby", "add-review");
-  li.classList.add("reviews-list-li");
-  li.id = "review-form";
-  const topbar = document.createElement('div');
-  topbar.classList.add("review-topbar");
+  li.classList.add("reviews-list-li", "form-li");
+  const reviewForm = document.createElement('form');
+  reviewForm.setAttribute("aria-labelledby", "add-review");
+  reviewForm.id = "review-form";
   const reviewFieldSet = document.createElement('fieldset');
   const formHeader = document.createElement('legend');
   formHeader.innerHTML = " add a review ";
@@ -255,7 +255,7 @@ reviewForm = () => {
   nameLabel.innerHTML = "name: ";
   const nameField = document.createElement('input');
   nameField.name = "name";
-  nameField.id = "name";
+  nameField.id = "review-name";
   nameField.type = "text";
   const ratingLabel = document.createElement('label');
   ratingLabel.for = "rating";
@@ -263,7 +263,7 @@ reviewForm = () => {
   ratingLabel.innerHTML = "rating: ";
   const rating = document.createElement('select');
   rating.name = "rating";
-  rating.id = "rating";
+  rating.id = "review-rating";
   let stars = [];
   for (let i=5; i>=1; i--){
     let star = document.createElement('option');
@@ -298,7 +298,7 @@ reviewForm = () => {
   reviewFieldSet.appendChild(submit);
 
 
-  topbar.appendChild(reviewFieldSet);
+  reviewForm.appendChild(reviewFieldSet);
   /*
   const date = document.createElement('p');
   let reviewDate = new Date();
@@ -306,8 +306,7 @@ reviewForm = () => {
   date.classList.add("review-date");
   topbar.appendChild(date);
   */
-  li.appendChild(topbar);
-
+  li.appendChild(reviewForm);
 
   return li;
 }
@@ -344,3 +343,16 @@ getParameterByName = (name, url) => {
 }
 
 //TODO: Add in JS to populate the form element
+submitReview = (event) => {
+  event.preventDefault();
+  let restaurantID = getParameterByName('id');
+  let reviewName = document.getElementById("review-name");
+  let reviewRating = document.getElementById("review-rating");
+  let reviewText = document.getElementById("review-text");
+  let data = {};
+  data.restaurant_id = parseInt(restaurantID);
+  data.name = reviewName.value;
+  data.rating = parseInt(reviewRating.value);
+  data.comments = reviewText.value;
+  DBHelper.createReview(data);
+}

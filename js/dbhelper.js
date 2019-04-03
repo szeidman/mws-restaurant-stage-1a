@@ -39,6 +39,18 @@ class DBHelper {
     .then(json => json)
     .catch(e => console.log(e));
   }
+  //Create a review
+    static createReview(data) {
+      return fetch(`${DBHelper.DATABASE_URL}/reviews/`, {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: {'Content-Type': 'application/json'}
+        }
+      )
+      .then(response => response.json())
+      .then(json => {console.log(json); location.reload();})
+      .catch(e => console.log(e));
+    }
 
   /**
    * Fetch a restaurant by its ID.

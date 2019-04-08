@@ -68,6 +68,14 @@ class DBHelper {
       .catch(e => console.log(e));
     }
 
+  static toggleFavoriteRestaurant(id, isFavorite) {
+    console.log(isFavorite);
+    return fetch(`${DBHelper.DATABASE_URL}/restaurants/${id}/?is_favorite=${!isFavorite}`, {
+      method: 'PUT'
+      }
+    )
+  }
+
   /**
    * Fetch restaurants by a cuisine type with proper error handling.
    */

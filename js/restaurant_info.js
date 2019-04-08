@@ -118,9 +118,21 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
 
+  const favorite = document.getElementById('restaurant-favorite');
+  let isFavorite = (restaurant.is_favorite === 'true');
+  console.log(isFavorite);
+  let favoriteHeart = (isFavorite) ? `&#x1F499;` : `&#x2661;`;
+  favorite.innerHTML = favoriteHeart;
+  let faveText = (isFavorite) ? `Unfavorite`: `Favorite`;
+  favorite.setAttribute("title", `${faveText} this restaurant`);
+  favorite.setAttribute("aria-label", `${faveText} this restaurant`);
+  favorite.onclick = function onClick(){
+      return DBHelper.toggleFavoriteRestaurant(restaurant.id, isFavorite);
+    };
+
   const address = document.getElementById('restaurant-address');
   address.innerHTML = restaurant.address;
-  /* Add responsive images. */
+  /* Responsive images. */
   const picture = document.getElementById('restaurant-picture');
   picture.className = 'restaurant-img';
   const large = document.createElement('source');
@@ -207,17 +219,23 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
 createReviewHTML = (review) => {
   const li = document.createElement('li');
   li.classList.add("reviews-list-li");
+
   const topbar = document.createElement('div');
   topbar.classList.add("review-topbar");
+
   const name = document.createElement('p');
   name.innerHTML = review.name;
   name.classList.add("review-name", "reviews-list-toptext");
+
   topbar.appendChild(name);
+
   const date = document.createElement('p');
   let reviewDate = new Date(review.updatedAt);
   date.innerHTML = reviewDate.toLocaleString();
   date.classList.add("review-date", "reviews-list-toptext");
+
   topbar.appendChild(date);
+
   li.appendChild(topbar);
   //&star; &starf;
   const starRating = review.rating;
@@ -229,6 +247,7 @@ createReviewHTML = (review) => {
   rating.innerHTML = `Rating: ${stars}`;
   rating.setAttribute("aria-label", `Rating: ${starRating} out of 5 stars`);
   rating.classList.add("review-rating", "reviews-list-toptext");
+
   li.appendChild(rating);
 
   const comments = document.createElement('p');

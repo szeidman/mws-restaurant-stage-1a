@@ -73,7 +73,7 @@ class DBHelper {
     return fetch(`${DBHelper.DATABASE_URL}/restaurants/${id}/?is_favorite=${!isFavorite}`, {
       method: 'PUT'
       }
-    )
+    );
   }
 
   /**

@@ -127,7 +127,9 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   favorite.setAttribute("title", `${faveText} this restaurant`);
   favorite.setAttribute("aria-label", `${faveText} this restaurant`);
   favorite.onclick = function onClick(){
-      return DBHelper.toggleFavoriteRestaurant(restaurant.id, isFavorite);
+      DBHelper.toggleFavoriteRestaurant(restaurant.id, isFavorite)
+      .then(r=>location.reload());
+      //todo: just update the favorite heart stuff not the whole page
     };
 
   const address = document.getElementById('restaurant-address');
@@ -160,6 +162,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   //fillReviewsHTML();
 
 }
+
 
 /**
  * Create restaurant operating hours HTML table and add it to the webpage.
@@ -373,5 +376,6 @@ submitReview = (event) => {
   data.name = reviewName.value;
   data.rating = parseInt(reviewRating.value);
   data.comments = reviewText.value;
-  DBHelper.createReview(data);
+  DBHelper.createReview(data)
+  .then(location.reload());
 }

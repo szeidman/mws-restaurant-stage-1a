@@ -1,6 +1,7 @@
 /* jshint -W104 */ /* jshint -W119 */
 
 var restaurant;
+var reviews;
 var newMap;
 
 // Register service worker.
@@ -12,6 +13,14 @@ if ('serviceWorker' in navigator) {
   })
   .catch(function(error) {
     console.log('Service worker registration failed, error:', error);
+  });
+}
+
+if('serviceWorker' in navigator && 'SyncManager' in window){
+  navigator.serviceWorker.ready.then(reg =>{
+    return reg.sync.register('dataSync')
+    .then(r=>{console.log('sync regd, looks like', window);})
+    .catch(e=>{console.log("didn't work", e);});
   });
 }
 
@@ -64,31 +73,40 @@ initMap = () => {
 } */
 
 fetchReviewsFromURL = (restID) => {
-  if(self.restaurant){
-    if (self.restaurant.reviews) {
-      return self.restaurant.reviews;
+  if(self.reviews){
+      return self.reviews;
     }
     return DBHelper.fetchReviewsByRestaurant(restID)
     .then(reviews => {
-      self.restaurant.reviews = reviews;
+      self.reviews = reviews;
       if(!reviews) {
-        console.error(error);
+        console.error("error no reviews");
         return;
       }
-      fillReviewsHTML(self.restaurant.reviews);
+      fillReviewsHTML(self.reviews);
     })
     .catch(e=>console.log(e));
-  }
 };
 /**
  * Get current restaurant from page URL.
  */
-fetchRestaurantFromURL = () => {
+fetchRestaurantFromURL = (favoriteFetch = false) => {
   if (self.restaurant) { // restaurant already fetched!
-    if(!self.restaurant.reviews){
+    if(!self.reviews){
       fetchReviewsFromURL(self.restaurant.id)
       .then(r=> self.restaurant)
       .catch(e=>console.log(e));
+    }
+    if(favoriteFetch){
+      return DBHelper.fetchRestaurantById(self.restaurant.id).then(restaurant => {
+        self.restaurant = restaurant;
+        if (!restaurant) {
+          console.error(error);
+          return;
+        }
+      })
+      .then(r => {favoriteFill(self.restaurant);})
+      .catch(e => console.log(e));
     }
     return self.restaurant;
   } else {
@@ -111,13 +129,7 @@ fetchRestaurantFromURL = () => {
   }
 }
 
-/**
- * Create restaurant HTML and add it to the webpage
- */
-fillRestaurantHTML = (restaurant = self.restaurant) => {
-  const name = document.getElementById('restaurant-name');
-  name.innerHTML = restaurant.name;
-
+favoriteFill = (restaurant) => {
   const favorite = document.getElementById('restaurant-favorite');
   let isFavorite = (restaurant.is_favorite === 'true');
   console.log(isFavorite);
@@ -128,10 +140,18 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   favorite.setAttribute("aria-label", `${faveText} this restaurant`);
   favorite.onclick = function onClick(){
       DBHelper.toggleFavoriteRestaurant(restaurant.id, isFavorite)
-      .then(r=>location.reload());
+      .then(r=>fetchRestaurantFromURL(true));
       //todo: just update the favorite heart stuff not the whole page
     };
+}
 
+/**
+ * Create restaurant HTML and add it to the webpage
+ */
+fillRestaurantHTML = (restaurant = self.restaurant) => {
+  const name = document.getElementById('restaurant-name');
+  name.innerHTML = restaurant.name;
+  favoriteFill(restaurant);
   const address = document.getElementById('restaurant-address');
   address.innerHTML = restaurant.address;
   /* Responsive images. */
@@ -191,7 +211,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+fillReviewsHTML = (reviews = self.reviews) => {
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h3');
   title.setAttribute('aria-label', "Reviews");
@@ -213,7 +233,6 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   //TODO: Add a ul append child for the form here.
   container.appendChild(ul);
   document.getElementById("review-form").addEventListener('submit', submitReview);
-
 };
 
 /**
@@ -378,4 +397,5 @@ submitReview = (event) => {
   data.comments = reviewText.value;
   DBHelper.createReview(data)
   .then(location.reload());
+  //TODO: replace with just rerendering of reviews.
 }

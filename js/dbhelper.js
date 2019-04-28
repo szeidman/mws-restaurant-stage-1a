@@ -34,22 +34,32 @@ class DBHelper {
   }
 //Fetch reviews for a particular restaurant.
   static fetchReviewsByRestaurant(restID) {
-    return fetch(`${DBHelper.DATABASE_URL}/reviews/?restaurant_id=${restID}`)
+    //TODO: change to a fetchReviews that filters by the ID
+    return fetch(`${DBHelper.DATABASE_URL}/reviews?restaurant_id=${restID}`)
     .then(response => response.json())
     .then(json => json)
     .catch(e => console.log(e));
   }
+
+
   //Create a review
     static createReview(data) {
-      return fetch(`${DBHelper.DATABASE_URL}/reviews/`, {
+      let fetchUrl = `${DBHelper.DATABASE_URL}/reviews/`;
+      let fetchParams = {
           method: 'POST',
           body: JSON.stringify(data),
           headers: {'Content-Type': 'application/json'}
-        }
-      )
+        };
+        //Store review for cache
+          //Send it as a message to the service worker! then SW puts it in a queue that waits for back online then sends it as a fetch
+      return fetch(fetchUrl, fetchParams)
       .then(response => response.json())
-      .then(json => {console.log(json); location.reload();})
-      .catch(e => console.log(e));
+      .then(json => {console.log(json);})
+      .catch(e => {
+          if (navigator.serviceWorker) {
+            navigator.serviceWorker.controller.postMessage("URL AND PARAMS "+fetchUrl+" "+fetchParams);
+          }
+        });
     }
 
   /**

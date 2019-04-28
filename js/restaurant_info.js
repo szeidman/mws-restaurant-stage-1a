@@ -395,7 +395,6 @@ submitReview = (event) => {
   data.name = reviewName.value;
   data.rating = parseInt(reviewRating.value);
   data.comments = reviewText.value;
-  DBHelper.createReview(data)
-  .then(location.reload());
+  DBHelper.createReview(data);
   //TODO: replace with just rerendering of reviews.
 }

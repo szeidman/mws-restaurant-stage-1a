@@ -16,14 +16,6 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-if('serviceWorker' in navigator && 'SyncManager' in window){
-  navigator.serviceWorker.ready.then(reg =>{
-    return reg.sync.register('dataSync')
-    .then(r=>{console.log('sync regd, looks like', window);})
-    .catch(e=>{console.log("didn't work", e);});
-  });
-}
-
 /**
  * Initialize map as soon as the page is loaded.
  */

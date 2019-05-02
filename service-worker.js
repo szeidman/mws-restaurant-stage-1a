@@ -81,7 +81,12 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('message', event => {
   console.log(event.data);
-})
+  openDatabase.then(db=>{
+    const tx = db.transaction('review-form-submits', 'readwrite');
+    tx.objectStore('review-form-submits').put({value: event.data});
+    tx.complete;
+  });
+});
 /* Listen for fetch event, check if url is in cache and return from cache if found. */
 
 self.addEventListener('fetch', event => {
@@ -199,14 +204,8 @@ self.addEventListener('fetch', event => {
                   });
                   return response;
                 }
-              ).catch(r=>{
-                openDatabase.then(db=>{
-                  const tx = db.transaction('review-form-submits', 'readwrite');
-                  tx.objectStore('review-form-submits').put(eventClone);
-                  tx.complete;
-                })
-                return new Response;
-              })
+              )
+              //No catch here since fallback is at dbhelper
           );
           //catch goes here to send to the temp database if offline
         } else if (event.request.method === 'GET'){
@@ -273,13 +272,21 @@ self.addEventListener('fetch', event => {
 /*
 TODO: add event listener to see if online. Perhaps add to fetch logic
 */
-self.addEventListener('sync', function(event) {
-  console.log('listening time!')
+self.addEventListener('sync', event => {
   if (event.tag === 'dataSync'){
-    //see when online, grab the store and delete it
-    //event.waitUntil(successpromise());
+    console.log('listening time!');
   }
+  event.waitUntil(
+    openDatabase.then(db => {
+      return db.transaction('review-form-submits')
+      .objectStore('review-form-submits').getAll();})
+      .then(reviewFormSubmits=>console.log(reviewFormSubmits))
+  );
+  /*
+  return fetch(fetchUrl, fetchParams)
+  .then(response => response.json())
+  .then(json => {console.log(json);})
+  */
 });
-
 
 //TODO: Add a listener when connection's offline to push through updates from IDB when reconnected (can be 2-way updates)

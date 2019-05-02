@@ -67,8 +67,14 @@ class DBHelper {
                 .catch(e=>{console.log("didn't work", e);});
               });
             }
+            //If no SW just fetch now
+          } else {
+            return fetch(fetchUrl, fetchParams)
+            .then(response => response.json())
+            .then(json => {console.log(json);})
+            .catch(e => {console.log(e);});
           }
-          //ELSE JUST TRY THE FETCH HERE
+
           /*
         });
         */

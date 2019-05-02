@@ -277,10 +277,17 @@ self.addEventListener('sync', event => {
     console.log('listening time!');
   }
   event.waitUntil(
-    openDatabase.then(db => {
-      return db.transaction('review-form-submits')
-      .objectStore('review-form-submits').getAll();})
-      .then(reviewFormSubmits=>console.log(reviewFormSubmits))
+    openDatabase.then(db =>
+       db.transaction('review-form-submits')
+      .objectStore('review-form-submits').getAll()
+    ).then(formSubmits=>{
+      Promise.all(formSubmits.map(sub=>{
+        fetch(sub.value.url, sub.value.params)
+        .then(response => response.json())
+        .then(json => {console.log(json);})
+        .catch(e => {console.log(e);});
+      }));
+    })
   );
   /*
   return fetch(fetchUrl, fetchParams)

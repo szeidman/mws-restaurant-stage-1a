@@ -5,9 +5,7 @@ This branch aims to meet the specifications for Stage 3 of the Restaurant Review
 * Responsive layouts, including responsive images, for main and detail pages to allow clean viewing across screen sizes
 * Caching via a Service Worker and IndexedDB to enable offline use
 * Performance features to meet various benchmarks checked with Lighthouse
-
-After this stage is completed, it will also:
-* Allow users to submit reviews, including when offline (by sending them the next time the user is back online).
+* Allow users to submit reviews, including when offline (by sending them the next time the user is back online)
 
 ### Usage
 You'll need to install node and npm if you've not already.

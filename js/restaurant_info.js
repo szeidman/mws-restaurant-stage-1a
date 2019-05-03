@@ -414,7 +414,7 @@ submitReview = (event) => {
   if (navigator.serviceWorker && navigator.serviceWorker.controller){
     const snackbar = document.getElementById("offline-snackbar");
     snackbar.innerHTML = "Review submitted. Waiting for connection...";
-    snackbar.classList.add("show");
+    snackbar.className = "show";
     snackbar.setAttribute("role", "alert");
   }
   DBHelper.createReview(data);

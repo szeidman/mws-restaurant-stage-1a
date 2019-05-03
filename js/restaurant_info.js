@@ -12,6 +12,10 @@ if ('serviceWorker' in navigator) {
     console.log('Registration successful, scope is:', registration.scope);
     navigator.serviceWorker.addEventListener('message', event => {
       if(event.data === "Refresh the reviews!"){
+        const snackbar = document.getElementById("offline-snackbar");
+        snackbar.classList.remove("show");
+        snackbar.removeAttribute("alert");
+        snackbar.innerHTML = "";
         fetchReviewsFromURL(self.restaurant.id, true);
       }
     });
@@ -129,7 +133,6 @@ fetchRestaurantFromURL = (favoriteFetch = false) => {
 favoriteFill = (restaurant) => {
   const favorite = document.getElementById('restaurant-favorite');
   let isFavorite = (restaurant.is_favorite === 'true');
-  console.log(isFavorite);
   let favoriteHeart = (isFavorite) ? `&#x1F499;` : `&#x2661;`;
   favorite.innerHTML = favoriteHeart;
   let faveText = (isFavorite) ? `Unfavorite`: `Favorite`;
@@ -398,5 +401,21 @@ submitReview = (event) => {
   data.name = reviewName.value;
   data.rating = parseInt(reviewRating.value);
   data.comments = reviewText.value;
+  if(!data.name || !data.comments){
+    if (!data.name && !data.comments){
+      return alert("Enter your name and review comments before submitting.");
+    } else if (!data.name) {
+      return alert("Enter your name before submitting.");
+    } else if (!data.comments){
+      return alert("Enter your review comments before submitting.");
+    }
+  }
+  document.getElementById("review-form").reset();
+  if (navigator.serviceWorker && navigator.serviceWorker.controller){
+    const snackbar = document.getElementById("offline-snackbar");
+    snackbar.innerHTML = "Review submitted. Waiting for connection...";
+    snackbar.classList.add("show");
+    snackbar.setAttribute("role", "alert");
+  }
   DBHelper.createReview(data);
 };

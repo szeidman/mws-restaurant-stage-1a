@@ -5,7 +5,6 @@
  * Common database helper functions.
  */
 class DBHelper {
-
   /**
    * Database URL.
    * Change this to restaurants.json file location on your server.
@@ -52,7 +51,7 @@ class DBHelper {
         };
         //Store review for cache
           //Send it as a message to the service worker! then SW puts it in a queue that waits for back online then sends it as a fetch
-        if (navigator.serviceWorker) {
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
           navigator.serviceWorker.controller.postMessage({url: fetchUrl, params: fetchParams});
           if ('SyncManager' in window){
             navigator.serviceWorker.ready.then(reg =>{
@@ -61,11 +60,14 @@ class DBHelper {
               .catch(e=>{console.log("didn't work", e);});
             });
           }
-          //If no SW just fetch now
+          //If no SW just fetch now and reload
         } else {
           return fetch(fetchUrl, fetchParams)
           .then(response => response.json())
-          .then(json => {console.log(json);})
+          .then(json => {
+            console.log(json);
+            location.reload();
+          })
           .catch(e => {console.log(e);});
         }
     }
@@ -85,9 +87,8 @@ class DBHelper {
       })
       .catch(e => console.log(e));
     }
-
+//Send request to toggle favorite on/off
   static toggleFavoriteRestaurant(id, isFavorite) {
-    console.log(isFavorite);
     return fetch(`${DBHelper.DATABASE_URL}/restaurants/${id}/?is_favorite=${!isFavorite}`, {
       method: 'PUT'
       }
@@ -213,11 +214,5 @@ class DBHelper {
       marker.addTo(newMap);
     return marker;
   }
-
-  //TODO: Add function to send form post via fetch
-
-  //TODO: Add function to update form put via fetch
-
-  //TODO: Add function to update isFavorite on restaurants via fetch
 
 }

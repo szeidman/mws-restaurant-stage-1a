@@ -425,3 +425,22 @@ textarea {
 .skip-link:focus {
 	top: 0;
 }
+
+#offline-snackbar {
+	visibility: hidden;
+	min-width: 5em;
+	margin-left: -5em;
+	background-color:black;
+	color: white;
+	text-align: center;
+	border-radius: 1px;
+	padding: 0.5em;
+	position: fixed;
+	z-index: 1;
+	left: 45%;
+	bottom: 30px;
+}
+
+#offline-snackbar.show {
+	visibility: visible;
+}

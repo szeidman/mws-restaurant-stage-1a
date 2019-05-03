@@ -188,7 +188,6 @@ self.addEventListener('fetch', event => {
           reviewID = requestPath.replace('/reviews/','');
         }
         if (event.request.method === 'POST'){
-          console.log("here's the event ", event);
           let eventClone = event.request.clone();
           event.respondWith(
             fetch(event.request)
@@ -270,7 +269,6 @@ self.addEventListener('fetch', event => {
 
 self.addEventListener('sync', event => {
   if (event.tag === 'dataSync'){
-    console.log('listening time!');
     //Depending on tag can set variables for which database to put to. For now just use for reviews.
   }
   const clientId = event.clientId;

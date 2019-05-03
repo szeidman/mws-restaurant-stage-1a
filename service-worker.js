@@ -35,7 +35,7 @@ if (typeof idb === 'undefined' || idb === null) {
 }
 
 const openDatabase = idb.openDb('restrev-store', 3, upgradeDb => {
-  console.log("open database");
+  console.log("Opening idb database");
   switch (upgradeDb.oldVersion){
     case 0:
       upgradeDb.createObjectStore('restaurants-obj', {keyPath: 'id'});
@@ -50,7 +50,7 @@ const openDatabase = idb.openDb('restrev-store', 3, upgradeDb => {
 
 /* Listen for install event, set callback */
 self.addEventListener('install', event => {
-  console.log('Attempting to install service worker and cache static assets');
+  console.log('Installing SW/caching static assets');
   event.waitUntil(
     caches.open(staticCacheName)
     .then(cache => {
@@ -84,14 +84,13 @@ self.addEventListener('message', event => {
   openDatabase.then(db=>{
     const tx = db.transaction('review-form-submits', 'readwrite');
     tx.objectStore('review-form-submits').put({value: event.data});
-    tx.complete;
+    return tx.complete;
   });
 });
 /* Listen for fetch event, check if url is in cache and return from cache if found. */
 
 self.addEventListener('fetch', event => {
   console.log('Fetch event for ', event.request.url);
-  console.log('Fetch event is', event)
   let parseURL = new URL(event.request.url);
   let requestHost = parseURL.host;
   let requestPath = parseURL.pathname;
@@ -168,18 +167,18 @@ self.addEventListener('fetch', event => {
                   if (Array.isArray(json)){
                     json.forEach(j=>{
                       tx.objectStore('restaurants-obj').put(j);
-                    })
+                    });
                   } else {
                     tx.objectStore('restaurants-obj').put(json);
                   }
-                  tx.complete;
+                  return tx.complete;
                 });
               });
               return data;
             }).catch(r=>{console.log("caught restaurant!"); return idbData || console.log(r);});
             //catch goes here for idb temporary store if it doesn't work online
           }).catch(err=>{console.log(err);})
-        )
+        );
         //function for put
         //Execute the fetch, catch with putting it into the temp idb
       } else if (requestPath.startsWith('/reviews')){
@@ -199,7 +198,7 @@ self.addEventListener('fetch', event => {
                     openDatabase.then(db=>{
                       const tx = db.transaction('reviews-obj', 'readwrite');
                       tx.objectStore('reviews-obj').put(json);
-                      tx.complete;
+                      return tx.complete;
                     });
                   });
                   return response;
@@ -252,48 +251,58 @@ self.addEventListener('fetch', event => {
                       if (Array.isArray(json)){
                         json.forEach(j=>{
                           tx.objectStore('reviews-obj').put(j);
-                        })
+                        });
                       } else {
                         tx.objectStore('reviews-obj').put(json);
                       }
-                      tx.complete;
+                      return tx.complete;
                     }).catch(err=>{console.log(err);});
                   }).catch(err=>{console.log(err);});
                   return data;
                 }).catch(r=>{return idbData || console.log(r);});
                 //catch goes here to send to the temp database if offline
               }).catch(err=>{console.log(err);})
-            )
+            );
         }
-
       }
     }
 });
-/*
-TODO: add event listener to see if online. Perhaps add to fetch logic
-*/
+
 self.addEventListener('sync', event => {
   if (event.tag === 'dataSync'){
     console.log('listening time!');
+    //Depending on tag can set variables for which database to put to. For now just use for reviews.
   }
   event.waitUntil(
+    //On sync, grab the review-form-submits database and iterate through the rows
+    //For each row, do a fetch. If the fetch works, put the response in the reviews database.
+    //Then, remove it from the review-form-submits database.
     openDatabase.then(db =>
        db.transaction('review-form-submits')
       .objectStore('review-form-submits').getAll()
     ).then(formSubmits=>{
       Promise.all(formSubmits.map(sub=>{
         fetch(sub.value.url, sub.value.params)
-        .then(response => response.json())
-        .then(json => {console.log(json);})
-        .catch(e => {console.log(e);});
+        .then(response => {
+          console.log(response);
+          if (response.ok){
+            //If response ok, add to the regular IDB and delete from the stored.
+            let responseClone = response.clone();
+            responseClone.json().then(json=>{
+              openDatabase.then(db=>{
+                //Add to reviews
+                const tx = db.transaction('reviews-obj', 'readwrite');
+                tx.objectStore('reviews-obj').put(json);
+                //Delete from form submits
+                const deleteTx = db.transaction('review-form-submits', 'readwrite');
+                deleteTx.objectStore('review-form-submits').delete(sub.key, 'key');
+                return Promise.all([tx.complete, deleteTx.complete]);
+            });
+          });}
+          response.json();})
+        .then(json => console.log(json))
+        .catch(e => console.log(e));
       }));
     })
   );
-  /*
-  return fetch(fetchUrl, fetchParams)
-  .then(response => response.json())
-  .then(json => {console.log(json);})
-  */
 });
-
-//TODO: Add a listener when connection's offline to push through updates from IDB when reconnected (can be 2-way updates)

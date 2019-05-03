@@ -236,7 +236,6 @@ fillReviewsHTML = (reviews = self.reviews, reFetch = false) => {
     ul.appendChild(createReviewHTML(review));
   });
   ul.appendChild(reviewForm());
-  //TODO: Add a ul append child for the form here.
   container.appendChild(ul);
   document.getElementById("review-form").addEventListener('submit', submitReview);
 };
@@ -389,7 +388,6 @@ getParameterByName = (name, url) => {
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 };
 
-//TODO: Add in JS to populate the form element
 submitReview = (event) => {
   event.preventDefault();
   let restaurantID = getParameterByName('id');
@@ -401,6 +399,7 @@ submitReview = (event) => {
   data.name = reviewName.value;
   data.rating = parseInt(reviewRating.value);
   data.comments = reviewText.value;
+  //Error handling
   if(!data.name || !data.comments){
     if (!data.name && !data.comments){
       return alert("Enter your name and review comments before submitting.");
@@ -411,6 +410,7 @@ submitReview = (event) => {
     }
   }
   document.getElementById("review-form").reset();
+  //Add pending connection snackbar
   if (navigator.serviceWorker && navigator.serviceWorker.controller){
     const snackbar = document.getElementById("offline-snackbar");
     snackbar.innerHTML = "Review submitted. Waiting for connection...";

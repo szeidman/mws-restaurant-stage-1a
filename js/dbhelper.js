@@ -33,7 +33,6 @@ class DBHelper {
   }
 //Fetch reviews for a particular restaurant.
   static fetchReviewsByRestaurant(restID) {
-    //TODO: change to a fetchReviews that filters by the ID
     return fetch(`${DBHelper.DATABASE_URL}/reviews?restaurant_id=${restID}`)
     .then(response => response.json())
     .then(json => json)

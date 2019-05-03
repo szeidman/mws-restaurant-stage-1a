@@ -80,7 +80,6 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('message', event => {
-  console.log(event.data);
   openDatabase.then(db=>{
     const tx = db.transaction('review-form-submits', 'readwrite');
     tx.objectStore('review-form-submits').put({value: event.data});
@@ -98,7 +97,6 @@ self.addEventListener('fetch', event => {
   // add functions based on URL of Request
   // one for database requests and one for the rest
   // if a database request look to idb
-  // TODO: change handling by looking at whether response is json reponse instead of by host
   if (requestHost === 'localhost:8000'){
     event.respondWith(
       caches.match(event.request, {ignoreSearch: true})
@@ -122,11 +120,6 @@ self.addEventListener('fetch', event => {
   } else if (requestHost === 'localhost:1337'){
     if (requestPath.startsWith('/restaurants')){
       let restaurantID = requestPath.replace('/restaurants/','');
-      //TODO: break up into different methods for get versus post and put
-      //if put event.request.method === 'PUT'
-      //
-      console.log(event);
-      //Function for get
       event.respondWith(
           openDatabase.then(db => {
             if(!!restaurantID){
@@ -139,7 +132,6 @@ self.addEventListener('fetch', event => {
             }
           })
           .then(db=>{
-            //TODO: debug if not array
             //pass result over and update accordingly
             let dbData = false;
             let idbData;
@@ -156,7 +148,6 @@ self.addEventListener('fetch', event => {
               // convert to a response to allow clone(), json() functions to work
               idbData = new Response(JSON.stringify(db));
             }
-            // TODO: decide when to re-fetch data from API:
             // If database, return its data, then fetch and update  database. If nothing returned, just fetch and update.
             return fetch(event.request).then(data => {
               let dataClone = data.clone();
@@ -182,7 +173,6 @@ self.addEventListener('fetch', event => {
         //function for put
         //Execute the fetch, catch with putting it into the temp idb
       } else if (requestPath.startsWith('/reviews')){
-        //TODO: add in stuff for review requests
         let reviewID = false;
         if (!requestSearch){
           reviewID = requestPath.replace('/reviews/','');
@@ -221,7 +211,6 @@ self.addEventListener('fetch', event => {
                 }
               })
               .then(db=>{
-                //TODO: debug if not array
                 //pass result over and update accordingly
                 let dbData = false;
                 let idbData;
@@ -238,9 +227,7 @@ self.addEventListener('fetch', event => {
                   // convert to a response to allow clone(), json() functions to work
                   idbData = new Response(JSON.stringify(db));
                 }
-                // TODO: decide when to re-fetch data from API:
                 // If database, return its data, then fetch and update  database. If nothing returned, just fetch and update.
-                //return idbData || fetch(event.request).then(data => {
                 return fetch(event.request).then(data => {
                   let dataClone = data.clone();
                   dataClone.json().then(json => {
@@ -283,7 +270,6 @@ self.addEventListener('sync', event => {
       Promise.all(formSubmits.map(sub=>{
         fetch(sub.value.url, sub.value.params)
         .then(response => {
-          console.log(response);
           if (response.ok){
             //If response ok, add to the regular IDB and delete from the stored.
             let responseClone = response.clone();

@@ -294,7 +294,7 @@ reviewForm = () => {
   formHeader.innerHTML = " add a review ";
   formHeader.id = "add-review";
   const nameLabel = document.createElement('label');
-  nameLabel.for = "name";
+  nameLabel.setAttribute("for", "review-name");
   nameLabel.classList.add("form-label");
   nameLabel.innerHTML = "name: ";
   const nameField = document.createElement('input');
@@ -302,7 +302,7 @@ reviewForm = () => {
   nameField.id = "review-name";
   nameField.type = "text";
   const ratingLabel = document.createElement('label');
-  ratingLabel.for = "rating";
+  ratingLabel.setAttribute("for", "review-rating");
   ratingLabel.classList.add("form-label");
   ratingLabel.innerHTML = "rating: ";
   const rating = document.createElement('select');
@@ -317,7 +317,7 @@ reviewForm = () => {
     rating.appendChild(star);
   }
   const reviewLabel = document.createElement('label');
-  reviewLabel.for = "review-text";
+  reviewLabel.setAttribute("for", "review-text");
   reviewLabel.classList.add("form-label");
   reviewLabel.innerHTML = "comments: ";
   const reviewText = document.createElement('textarea');

@@ -52,32 +52,22 @@ class DBHelper {
         };
         //Store review for cache
           //Send it as a message to the service worker! then SW puts it in a queue that waits for back online then sends it as a fetch
-/*
-      return fetch(fetchUrl, fetchParams)
-      .then(response => response.json())
-      .then(json => {console.log(json);})
-      .catch(e => {
-*/
-          if (navigator.serviceWorker) {
-            navigator.serviceWorker.controller.postMessage({url: fetchUrl, params: fetchParams});
-            if ('SyncManager' in window){
-              navigator.serviceWorker.ready.then(reg =>{
-                return reg.sync.register('dataSync')
-                .then(r=>{console.log('sync regd, looks like', window);})
-                .catch(e=>{console.log("didn't work", e);});
-              });
-            }
-            //If no SW just fetch now
-          } else {
-            return fetch(fetchUrl, fetchParams)
-            .then(response => response.json())
-            .then(json => {console.log(json);})
-            .catch(e => {console.log(e);});
+        if (navigator.serviceWorker) {
+          navigator.serviceWorker.controller.postMessage({url: fetchUrl, params: fetchParams});
+          if ('SyncManager' in window){
+            navigator.serviceWorker.ready.then(reg =>{
+              return reg.sync.register('dataSync')
+              .then(r=>{console.log('sync regd, looks like', window);})
+              .catch(e=>{console.log("didn't work", e);});
+            });
           }
-
-          /*
-        });
-        */
+          //If no SW just fetch now
+        } else {
+          return fetch(fetchUrl, fetchParams)
+          .then(response => response.json())
+          .then(json => {console.log(json);})
+          .catch(e => {console.log(e);});
+        }
     }
 
   /**

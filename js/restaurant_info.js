@@ -10,8 +10,13 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/service-worker.js')
   .then(function(registration) {
     console.log('Registration successful, scope is:', registration.scope);
+    navigator.serviceWorker.addEventListener('message', event => {
+      if(event.data === "Refresh the reviews!"){
+        fetchReviewsFromURL(self.restaurant.id, true);
+      }
+    });
   })
-  .catch(function(error) {
+  .catch(e => {
     console.log('Service worker registration failed, error:', error);
   });
 }
@@ -64,8 +69,8 @@ initMap = () => {
   });
 } */
 
-fetchReviewsFromURL = (restID) => {
-  if(self.reviews){
+fetchReviewsFromURL = (restID = self.restaurant.id, reFetch = false) => {
+  if(self.reviews && !reFetch){
       return self.reviews;
     }
     return DBHelper.fetchReviewsByRestaurant(restID)
@@ -75,7 +80,7 @@ fetchReviewsFromURL = (restID) => {
         console.error("error no reviews");
         return;
       }
-      fillReviewsHTML(self.reviews);
+      fillReviewsHTML(self.reviews, reFetch);
     })
     .catch(e=>console.log(e));
 };
@@ -119,7 +124,7 @@ fetchRestaurantFromURL = (favoriteFetch = false) => {
       .catch(e => console.log(e));
     }
   }
-}
+};
 
 favoriteFill = (restaurant) => {
   const favorite = document.getElementById('restaurant-favorite');
@@ -133,9 +138,8 @@ favoriteFill = (restaurant) => {
   favorite.onclick = function onClick(){
       DBHelper.toggleFavoriteRestaurant(restaurant.id, isFavorite)
       .then(r=>fetchRestaurantFromURL(true));
-      //todo: just update the favorite heart stuff not the whole page
     };
-}
+};
 
 /**
  * Create restaurant HTML and add it to the webpage
@@ -170,10 +174,8 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   if (restaurant.operating_hours) {
     fillRestaurantHoursHTML();
   }
-  // fill reviews
-  //fillReviewsHTML();
 
-}
+};
 
 
 /**
@@ -198,26 +200,35 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 
     hours.appendChild(row);
   }
-}
+};
 
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-fillReviewsHTML = (reviews = self.reviews) => {
-  const container = document.getElementById('reviews-container');
-  const title = document.createElement('h3');
-  title.setAttribute('aria-label', "Reviews");
-  title.tabIndex = "0";
-  title.innerHTML = 'Reviews';
-  container.appendChild(title);
+fillReviewsHTML = (reviews = self.reviews, reFetch = false) => {
+    const container = document.getElementById('reviews-container');
+    if(!reFetch){
+      const title = document.createElement('h3');
+      title.setAttribute('aria-label', "Reviews");
+      title.tabIndex = "0";
+      title.innerHTML = 'Reviews';
+      container.appendChild(title);
 
-  if (!reviews) {
-    const noReviews = document.createElement('p');
-    noReviews.innerHTML = 'No reviews yet!';
-    container.appendChild(noReviews);
-    return;
-  }
+      if (!reviews) {
+        const noReviews = document.createElement('p');
+        noReviews.innerHTML = 'No reviews yet!';
+        container.appendChild(noReviews);
+        return;
+      }
+    }
   const ul = document.getElementById('reviews-list');
+  removeAllNodes = () =>{
+    if(ul.hasChildNodes()){
+      ul.removeChild(ul.childNodes[0]);
+      removeAllNodes();
+    }
+  };
+  removeAllNodes();
   reviews.forEach(review => {
     ul.appendChild(createReviewHTML(review));
   });
@@ -342,7 +353,7 @@ reviewForm = () => {
   li.appendChild(reviewForm);
 
   return li;
-}
+};
 
 /**
  * Add restaurant name to the breadcrumb navigation menu
@@ -357,7 +368,7 @@ fillBreadcrumb = (restaurant=self.restaurant) => {
   liLink.setAttribute('aria-current', 'page');
   li.appendChild(liLink);
   breadcrumb.appendChild(li);
-}
+};
 
 /**
  * Get a parameter by name from page URL.
@@ -373,7 +384,7 @@ getParameterByName = (name, url) => {
   if (!results[2])
     return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
-}
+};
 
 //TODO: Add in JS to populate the form element
 submitReview = (event) => {
@@ -388,5 +399,4 @@ submitReview = (event) => {
   data.rating = parseInt(reviewRating.value);
   data.comments = reviewText.value;
   DBHelper.createReview(data);
-  //TODO: replace with just rerendering of reviews.
-}
+};

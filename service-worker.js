@@ -273,6 +273,7 @@ self.addEventListener('sync', event => {
     console.log('listening time!');
     //Depending on tag can set variables for which database to put to. For now just use for reviews.
   }
+  const clientId = event.clientId;
   event.waitUntil(
     //On sync, grab the review-form-submits database and iterate through the rows
     //For each row, do a fetch. If the fetch works, put the response in the reviews database.
@@ -300,8 +301,13 @@ self.addEventListener('sync', event => {
             });
           });}
           response.json();})
-        .then(json => console.log(json))
-        .catch(e => console.log(e));
+        .then(json => self.clients.matchAll())
+        .then(clients =>{
+            clients.forEach(client=>{
+              client.postMessage("Refresh the reviews!");
+            });
+      })
+      .catch(e => console.log(e));
       }));
     })
   );
